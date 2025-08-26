@@ -152,7 +152,7 @@ export default function ChatScreen() {
   const handleForkMessage = async (msg: Message) => {
     if (!viewingChat) return;
     
-    const newConvName = `${viewingChat.conv.name} (Fork from message)`;
+    const newConvName = `${viewingChat.conv.name}`;
     try {
       const newConv = await StorageUtils.forkConversation(
         viewingChat.conv.id,
