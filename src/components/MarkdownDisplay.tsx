@@ -3,7 +3,7 @@ import { ElementContent, Root } from 'hast';
 import 'highlight.js/styles/stackoverflow-light.css';
 import 'katex/dist/katex.min.css';
 import { all as languages } from 'lowlight';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Markdown, { ExtraProps } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -24,31 +24,51 @@ export default function MarkdownDisplay({
   content: string;
   isGenerating?: boolean;
 }) {
+  const { config } = useAppContext();
   const preprocessedContent = useMemo(
     () => preprocessLaTeX(content),
     [content]
   );
+  // Dynamically load the syntax highlight theme
+  useEffect(() => {
+    // Remove any existing highlight.js styles
+    const existingLinks = document.querySelectorAll('link[data-syntax-highlight]');
+    existingLinks.forEach(link => link.remove());
+
+    // Load the new theme
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/${config.syntaxHighlightTheme}.min.css`;
+    link.dataset.syntaxHighlight = 'true';
+    document.head.appendChild(link);
+
+    return () => {
+      link.remove();
+    };
+  }, [config.syntaxHighlightTheme]);
   return (
-    <Markdown
-      remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-      rehypePlugins={[
-        [rehypeHighlight, { languages }],
-        rehypeKatex,
-        rehypeCustomCopyButton,
-      ]}
-      components={{
-        button: (props) => (
-          <CodeBlockButtons
-            {...props}
-            isGenerating={isGenerating}
-            origContent={preprocessedContent}
-          />
-        ),
-        // note: do not use "pre", "p" or other basic html elements here, it will cause the node to re-render when the message is being generated (this should be a bug with react-markdown, not sure how to fix it)
-      }}
-    >
-      {preprocessedContent}
-    </Markdown>
+    <div className="markdown-content">
+      <Markdown
+        remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+        rehypePlugins={[
+          [rehypeHighlight, { languages }],
+          rehypeKatex,
+          rehypeCustomCopyButton,
+        ]}
+        components={{
+          button: (props) => (
+            <CodeBlockButtons
+              {...props}
+              isGenerating={isGenerating}
+              origContent={preprocessedContent}
+            />
+          ),
+          // note: do not use "pre", "p" or other basic html elements here, it will cause the node to re-render when the message is being generated (this should be a bug with react-markdown, not sure how to fix it)
+        }}
+      >
+        {preprocessedContent}
+      </Markdown>
+    </div>
   );
 }
 
