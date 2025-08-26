@@ -6,6 +6,7 @@ import {
   ExclamationCircleIcon,
   PaperClipIcon,
   PencilSquareIcon,
+  ShareIcon,
 } from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
 import { useAppContext } from '../context/app.context';
@@ -32,6 +33,7 @@ export default function ChatMessage({
   onEditUserMessage,
   onEditAssistantMessage,
   onChangeSibling,
+  onForkMessage,
   isPending,
 }: {
   msg: Message | PendingMessage;
@@ -42,6 +44,7 @@ export default function ChatMessage({
   onEditUserMessage(msg: Message, content: string, extra: MessageExtra[]): void;
   onEditAssistantMessage(msg: Message, content: string): void;
   onChangeSibling(sibling: Message['id']): void;
+  onForkMessage(msg: Message): void;
   isPending?: boolean;
 }) {
   const { config } = useAppContext();
@@ -220,6 +223,22 @@ export default function ChatMessage({
               tooltipsContent="Edit message"
             >
               <PencilSquareIcon className="h-4 w-4" />
+            </BtnWithTooltips>
+          )}
+
+          {/* fork/branch off message */}
+          {!isPending && (
+            <BtnWithTooltips
+              className="btn-mini w-8 h-8"
+              onClick={() => {
+                if (msg.content !== null) {
+                  onForkMessage(msg as Message);
+                }
+              }}
+              disabled={!msg.content}
+              tooltipsContent="Fork conversation from here"
+            >
+              <ShareIcon className="h-4 w-4" />
             </BtnWithTooltips>
           )}
 

@@ -3,6 +3,7 @@ import {
   EllipsisVerticalIcon,
   PencilIcon,
   PencilSquareIcon,
+  ShareIcon,
   TrashIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -211,6 +212,7 @@ function ConversationItem({
   onDownload: () => void;
   onRename: () => void;
 }) {
+  const navigate = useNavigate();
   return (
     <div
       role="menuitem"
@@ -223,12 +225,15 @@ function ConversationItem({
     >
       <button
         key={conv.id}
-        className="w-full overflow-hidden truncate text-start"
+        className="w-full overflow-hidden truncate text-start flex items-center gap-1"
         onClick={onSelect}
         dir="auto"
         type="button"
         aria-label={`Select conversation: ${conv.name}`}
       >
+        {conv.forkSource && (
+          <ShareIcon className="h-3 w-3 opacity-60" aria-hidden="true" />
+        )}
         {conv.name}
       </button>
 
@@ -263,6 +268,20 @@ function ConversationItem({
               Download
             </button>
           </li>
+          {conv.forkSource && (
+            <li role="menuitem" tabIndex={0}>
+              <button
+                type="button"
+                aria-label="View source conversation"
+                onClick={() => {
+                  navigate(`/chat/${conv.forkSource?.convId}`);
+                }}
+              >
+                <ShareIcon className="w-4 h-4" />
+                View Source
+              </button>
+            </li>
+          )}
           <li
             role="menuitem"
             tabIndex={0}

@@ -149,6 +149,23 @@ export default function ChatScreen() {
     scrollToBottom(false);
   };
 
+  const handleForkMessage = async (msg: Message) => {
+    if (!viewingChat) return;
+    
+    const newConvName = `${viewingChat.conv.name} (Fork from message)`;
+    try {
+      const newConv = await StorageUtils.forkConversation(
+        viewingChat.conv.id,
+        msg.id,
+        newConvName
+      );
+      navigate(`/chat/${newConv.id}`);
+    } catch (error) {
+      console.error('Failed to fork conversation:', error);
+      // You might want to show a toast notification here
+    }
+  };
+
   const hasCanvas = !!canvasData;
 
   // due to some timing issues of StorageUtils.appendMsg(), we need to make sure the pendingMsg is not duplicated upon rendering (i.e. appears once in the saved conversation and once in the pendingMsg)
@@ -214,6 +231,7 @@ export default function ChatScreen() {
                 onEditUserMessage={handleEditUserMessage}
                 onEditAssistantMessage={handleEditMessage}
                 onChangeSibling={setCurrNodeId}
+                onForkMessage={handleForkMessage}
                 isPending={msg.isPending}
               />
             ))}

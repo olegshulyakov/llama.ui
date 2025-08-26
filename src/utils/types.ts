@@ -157,6 +157,10 @@ export interface Conversation {
   lastModified: number; // timestamp from Date.now()
   currNode: Message['id']; // the current message node being viewed
   name: string;
+  forkSource?: {
+    convId: string;
+    messageId: Message['id'];
+  };
 }
 
 export interface ViewingChat {

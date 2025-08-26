@@ -182,6 +182,79 @@ const StorageUtils = {
   },
 
   /**
+   * Creates a new conversation by forking from an existing message.
+   * @param sourceConvId The ID of the source conversation.
+   * @param forkMessageId The ID of the message to fork from.
+   * @param newConvName The name for the new conversation.
+   * @returns A promise resolving to the newly created Conversation object.
+   */
+  async forkConversation(
+    sourceConvId: string,
+    forkMessageId: Message['id'],
+    newConvName: string
+  ): Promise<Conversation> {
+    const now = Date.now();
+    const newConvId = `conv-${now}`;
+
+    // Get all messages from the source conversation
+    const sourceMessages = await this.getMessages(sourceConvId);
+    const forkMessage = sourceMessages.find(msg => msg.id === forkMessageId);
+    
+    if (!forkMessage) {
+      throw new Error(`Message with ID ${forkMessageId} not found in conversation ${sourceConvId}`);
+    }
+
+    // Get the path from root to the fork message
+    const pathToFork = this.filterByLeafNodeId(sourceMessages, forkMessageId, true);
+    
+    // Create mapping from old message IDs to new message IDs
+    const idMap = new Map<Message['id'], Message['id']>();
+    let currentId = now;
+    
+    // Generate new IDs for all messages in the path
+    for (const msg of pathToFork) {
+      idMap.set(msg.id, currentId++);
+    }
+
+    // Create new conversation with fork source information
+    const newForkMessageId = idMap.get(forkMessageId)!;
+    const newConv: Conversation = {
+      id: newConvId,
+      lastModified: now,
+      currNode: newForkMessageId, // Set current node to the new ID of the fork point
+      name: newConvName,
+      forkSource: {
+        convId: sourceConvId,
+        messageId: forkMessageId,
+      },
+    };
+
+    await db.transaction('rw', db.conversations, db.messages, async () => {
+      // Add the new conversation
+      await db.conversations.add(newConv);
+
+      // Copy all messages from the path to the new conversation with new IDs
+      for (const msg of pathToFork) {
+        const newId = idMap.get(msg.id)!;
+        const newParentId = msg.parent === -1 ? -1 : idMap.get(msg.parent)!;
+        
+        await db.messages.add({
+          ...msg,
+          id: newId,
+          convId: newConvId,
+          parent: newParentId,
+          children: msg.children
+            .map(childId => idMap.get(childId))
+            .filter((id): id is number => id !== undefined),
+        });
+      }
+    });
+
+    dispatchConversationChange(newConvId);
+    return newConv;
+  },
+
+  /**
    * Updates the name and lastModified timestamp of an existing conversation.
    * @param convId The ID of the conversation to update.
    * @param name The new name for the conversation.
