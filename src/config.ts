@@ -20,6 +20,7 @@ export const CONFIG_DEFAULT: Readonly<Configuration> = Object.freeze({
 
   /* ui */
   initials: lang.chatMessage.userLabel,
+  syntaxHighlightTheme: 'stackoverflow-dark',
 
   /* conversations */
   pasteLongTextToFileLen: 10000,

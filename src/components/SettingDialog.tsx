@@ -18,7 +18,7 @@ import {
   TvIcon,
 } from '@heroicons/react/24/outline';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
-import { baseUrl, CONFIG_DEFAULT, INFERENCE_PROVIDERS, isDev } from '../config';
+import { baseUrl, CONFIG_DEFAULT, INFERENCE_PROVIDERS, isDev, SYNTAX_HIGHLIGHT_THEMES } from '../config';
 import { useAppContext } from '../context/app.context';
 import { useInferenceContext } from '../context/inference.context';
 import * as lang from '../lang/en.json';
@@ -199,6 +199,13 @@ const getSettingTabsConfiguration = (
       DELIMETER,
       toSection('UI', <TvIcon className={ICON_CLASSNAME} />),
       toInput(SettingInputType.SHORT_INPUT, 'initials'),
+      toDropdown(
+        'syntaxHighlightTheme',
+        SYNTAX_HIGHLIGHT_THEMES.map(theme => ({
+          key: theme,
+          value: theme,
+        }))
+      ),
     ],
   },
 

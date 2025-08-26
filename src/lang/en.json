@@ -33,6 +33,10 @@
         "label": "User Name",
         "note": ""
       },
+      "syntaxHighlightTheme": {
+        "label": "Syntax Highlight Theme",
+        "note": "Choose the color theme for code blocks in messages"
+      },
       "pasteLongTextToFileLen": {
         "label": "On Paste: convert to file if length >",
         "note": "On pasting long text, it will be converted to a file. You can control the file length by setting the value of this parameter. Set to 0 to disable."

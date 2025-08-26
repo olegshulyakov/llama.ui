@@ -21,6 +21,7 @@ export interface Configuration {
 
   /* ui */
   initials: string;
+  syntaxHighlightTheme: string;
 
   /* conversations */
   pasteLongTextToFileLen: number;
