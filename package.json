@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "prestart": "npm run format",
-    "start": "VITE_APP_NAME=$npm_package_name vite",
-    "build": "npm run format && tsc -b && VITE_APP_NAME=$npm_package_name vite build",
-    "build:prod": "tsc -b && VITE_APP_NAME=$npm_package_name vite build",
+    "start": "cross-env VITE_APP_NAME=$npm_package_name vite",
+    "build": "npm run format && tsc -b && cross-env VITE_APP_NAME=$npm_package_name vite build",
+    "build:prod": "tsc -b && cross-env VITE_APP_NAME=$npm_package_name vite build",
     "format": "eslint . && prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "preview": "npm run build && vite preview"
   },
+
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@sec-ant/readable-stream": "^0.6.0",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^10.0.0",
     "daisyui": "^5.0.12",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
