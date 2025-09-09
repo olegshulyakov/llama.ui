@@ -1,18 +1,21 @@
 import {
   AdjustmentsHorizontalIcon,
   ArrowUpIcon,
+  MicrophoneIcon,
   PaperClipIcon,
+  StopCircleIcon,
   StopIcon,
 } from '@heroicons/react/24/solid';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useAppContext } from '../context/app.context.tsx';
-import { useVSCodeContext } from '../utils/llama-vscode.ts';
+import { useAppContext } from '../context/app.context';
+import { useVSCodeContext } from '../utils/llama-vscode';
 import { classNames, cleanCurrentUrl } from '../utils/misc';
-import { MessageExtra } from '../utils/types.ts';
-import { DropzoneArea } from './DropzoneArea.tsx';
-import { useChatExtraContext } from './useChatExtraContext.tsx';
-import { ChatTextareaApi, useChatTextarea } from './useChatTextarea.ts';
+import { MessageExtra } from '../utils/types';
+import { DropzoneArea } from './DropzoneArea';
+import SpeechToText, { SpeechRecordCallback } from './SpeechToText';
+import { useChatExtraContext } from './useChatExtraContext';
+import { useChatTextarea } from './useChatTextarea';
 
 /**
  * If the current URL contains "?m=...", prefill the message input with the value.
@@ -43,9 +46,14 @@ export function ChatInput({
   isGenerating: boolean;
 }) {
   const { setShowSettings } = useAppContext();
-  const textarea: ChatTextareaApi = useChatTextarea(getPrefilledContent());
+  const textarea = useChatTextarea(getPrefilledContent());
   const extraContext = useChatExtraContext();
   useVSCodeContext(textarea, extraContext);
+
+  const handleRecord: SpeechRecordCallback = useCallback(
+    (text: string) => textarea.setValue(text),
+    [textarea]
+  );
 
   const sendNewMessage = async () => {
     const lastInpMsg = textarea.value();
@@ -149,6 +157,35 @@ export function ChatInput({
                 >
                   <StopIcon className="h-5 w-5" />
                 </button>
+              )}
+
+              {!isGenerating && (
+                <SpeechToText onRecord={handleRecord}>
+                  {({ isRecording, startRecording, stopRecording }) => (
+                    <>
+                      {!isRecording && (
+                        <button
+                          className="btn btn-neutral w-8 h-8 p-0 rounded-full"
+                          onClick={startRecording}
+                          title="Record"
+                          aria-label="Start Recording"
+                        >
+                          <MicrophoneIcon className="h-5 w-5" />
+                        </button>
+                      )}
+                      {isRecording && (
+                        <button
+                          className="btn btn-neutral w-8 h-8 p-0 rounded-full"
+                          onClick={stopRecording}
+                          title="Stop"
+                          aria-label="Stop Recording"
+                        >
+                          <StopCircleIcon className="h-5 w-5" />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </SpeechToText>
               )}
 
               {!isGenerating && (
