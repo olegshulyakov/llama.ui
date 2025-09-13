@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { ChatTextareaApi } from '../components/useChatTextarea.ts';
-import { ChatExtraContextApi } from '../components/useChatExtraContext.tsx';
+import { ChatExtraContextApi } from './useChatExtraContext';
+import { ChatTextareaApi } from './useChatTextarea';
 
 // Extra context when using llama.cpp WebUI from llama-vscode, inside an iframe
 // Ref: https://github.com/ggml-org/llama.cpp/pull/11940

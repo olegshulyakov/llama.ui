@@ -8,23 +8,23 @@ import {
   Routes,
   useParams,
 } from 'react-router';
-import ChatScreen from './components/ChatScreen';
 import { Footer } from './components/Footer';
 import Header from './components/Header';
 import { ModalProvider } from './components/ModalProvider';
 import SettingDialog from './components/SettingDialog';
 import Sidebar from './components/Sidebar';
 import { ToastPopup } from './components/ToastPopup';
-import { useDebouncedCallback } from './components/useDebouncedCallback';
-import { usePWAUpdatePrompt } from './components/usePWAUpdatePrompt';
-import WelcomeScreen from './components/WelcomeScreen';
-import { AppContextProvider, useAppContext } from './context/app.context';
+import { AppContextProvider, useAppContext } from './context/app';
+import { ChatContextProvider } from './context/chat';
 import {
   InferenceContextProvider,
   useInferenceContext,
-} from './context/inference.context';
-import { MessageContextProvider } from './context/message.context';
+} from './context/inference';
+import { useDebouncedCallback } from './hooks/useDebouncedCallback';
+import { usePWAUpdatePrompt } from './hooks/usePWAUpdatePrompt';
 import * as lang from './lang/en.json';
+import ChatScreen from './pages/ChatScreen';
+import WelcomeScreen from './pages/WelcomeScreen';
 
 const DEBOUNCE_DELAY = 5000;
 const TOAST_IDS = {
@@ -39,14 +39,14 @@ const App: FC = () => {
         <div className="flex flex-row drawer xl:drawer-open">
           <AppContextProvider>
             <InferenceContextProvider>
-              <MessageContextProvider>
+              <ChatContextProvider>
                 <Routes>
                   <Route element={<AppLayout />}>
                     <Route path="/chat/:convId" element={<Chat />} />
                     <Route path="*" element={<WelcomeScreen />} />
                   </Route>
                 </Routes>
-              </MessageContextProvider>
+              </ChatContextProvider>
             </InferenceContextProvider>
           </AppContextProvider>
         </div>

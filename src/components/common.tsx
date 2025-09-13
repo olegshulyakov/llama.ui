@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { isDev } from '../config';
-import { classNames } from './misc';
+import { classNames } from '../utils';
 
 /**
  * A close button (X icon) with a default Tailwind CSS styling.
@@ -196,7 +196,7 @@ export function Dropdown<T extends DropdownOption>({
       {!isDisabled && (
         <details
           ref={dropdownRef}
-          className={`grow dropdown dropdown-${align} dropdown=${placement}`}
+          className={`grow dropdown dropdown-${align} dropdown-${placement}`}
         >
           <summary
             className="grow truncate flex justify-between items-center cursor-pointer"
@@ -262,32 +262,3 @@ export function Dropdown<T extends DropdownOption>({
     </div>
   );
 }
-
-/**
- * A language-sensitive formatter for both date and time information.
- *
- * @example
- * const date = new Date();
- * dateFormatter.format(date); // Returns localized short date + time
- */
-export const dateFormatter = new Intl.DateTimeFormat(
-  Intl.DateTimeFormat().resolvedOptions().locale,
-  {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }
-);
-
-/**
- * A language-sensitive formatter for time information only.
- *
- * @example
- * const date = new Date();
- * timeFormatter.format(date); // Returns localized short time
- */
-export const timeFormatter = new Intl.DateTimeFormat(
-  Intl.DateTimeFormat().resolvedOptions().locale,
-  {
-    timeStyle: 'short',
-  }
-);

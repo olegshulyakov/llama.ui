@@ -1,0 +1,142 @@
+{
+  "llama-cpp": {
+    "baseUrl": "http://localhost:8080",
+    "name": "Llama.cpp",
+    "icon": "assets/providers/llamacpp.svg",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": false
+  },
+  "lm-studio": {
+    "baseUrl": "http://localhost:1234",
+    "name": "LM Studio",
+    "icon": "assets/providers/lmstudio.webp",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": false
+  },
+  "ollama": {
+    "baseUrl": "http://localhost:11434",
+    "name": "Ollama",
+    "icon": "assets/providers/ollama.svg",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": false
+  },
+  "vllm": {
+    "baseUrl": "http://localhost:8000",
+    "name": "vLLM",
+    "icon": "assets/providers/vllm.svg",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": false
+  },
+  "openai": {
+    "baseUrl": "https://api.openai.com",
+    "name": "OpenAI",
+    "icon": "assets/providers/openai.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "anthropic": {
+    "baseUrl": "https://api.anthropic.com",
+    "name": "Anthropic",
+    "icon": "assets/providers/anthropic.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "mistral": {
+    "baseUrl": "https://api.mistral.ai",
+    "name": "Mistral",
+    "icon": "assets/providers/mistral.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "google": {
+    "baseUrl": "https://generativelanguage.googleapis.com",
+    "name": "Google",
+    "icon": "assets/providers/google.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "deepseek": {
+    "baseUrl": "https://api.deepseek.com",
+    "name": "DeepSeek",
+    "icon": "assets/providers/deepseek.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "qwen": {
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode",
+    "name": "Qwen",
+    "icon": "assets/providers/qwen.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "groq": {
+    "baseUrl": "https://api.groq.com/openai",
+    "name": "Groq",
+    "icon": "assets/providers/groq.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "open-router": {
+    "baseUrl": "https://openrouter.ai/api",
+    "name": "OpenRouter",
+    "icon": "assets/providers/openrouter.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "hugging-face": {
+    "baseUrl": "https://router.huggingface.co",
+    "name": "Hugging Face",
+    "icon": "assets/providers/huggingface.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "cohere": {
+    "baseUrl": "https://api.cohere.ai",
+    "name": "Cohere",
+    "icon": "assets/providers/cohere.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "perplexity": {
+    "baseUrl": "https://api.perplexity.ai",
+    "name": "Perplexity",
+    "icon": "assets/providers/perplexity.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "together": {
+    "baseUrl": "https://api.together.xyz",
+    "name": "Together AI",
+    "icon": "assets/providers/together.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "azure": {
+    "baseUrl": "https://<your-resource-name>.openai.azure.com",
+    "name": "Azure AI",
+    "icon": "assets/providers/microsoft.svg",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": true
+  },
+  "aws": {
+    "baseUrl": "https://<your-resource-name>.amazonaws.com/openai",
+    "name": "AWS Bedrock",
+    "icon": "assets/providers/aws.svg",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": true
+  },
+  "nvidia": {
+    "baseUrl": "https://integrate.api.nvidia.com",
+    "name": "Nvidia",
+    "icon": "assets/providers/nvidia.svg",
+    "allowCustomBaseUrl": false,
+    "isKeyRequired": true
+  },
+  "custom": {
+    "baseUrl": "https://api.custom.com",
+    "name": "OpenAI Compatible",
+    "icon": "",
+    "allowCustomBaseUrl": true,
+    "isKeyRequired": false
+  }
+}

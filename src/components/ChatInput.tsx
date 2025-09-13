@@ -6,13 +6,13 @@ import {
 } from '@heroicons/react/24/solid';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useAppContext } from '../context/app.context.tsx';
-import { useVSCodeContext } from '../utils/llama-vscode.ts';
-import { classNames, cleanCurrentUrl } from '../utils/misc';
-import { MessageExtra } from '../utils/types.ts';
-import { DropzoneArea } from './DropzoneArea.tsx';
-import { useChatExtraContext } from './useChatExtraContext.tsx';
-import { ChatTextareaApi, useChatTextarea } from './useChatTextarea.ts';
+import { useAppContext } from '../context/app';
+import { useChatExtraContext } from '../hooks/useChatExtraContext';
+import { ChatTextareaApi, useChatTextarea } from '../hooks/useChatTextarea';
+import { useVSCodeContext } from '../hooks/useVSCode';
+import { MessageExtra } from '../types';
+import { classNames, cleanCurrentUrl } from '../utils';
+import { DropzoneArea } from './DropzoneArea';
 
 /**
  * If the current URL contains "?m=...", prefill the message input with the value.
@@ -98,7 +98,7 @@ export function ChatInput({
             // Default (mobile): Enable vertical resize, overflow auto for scrolling if needed
             // Large screens (lg:): Disable manual resize, apply max-height for autosize limit
             className="w-full focus:outline-none px-2 border-none focus:ring-0 resize-none"
-            placeholder="Type a message (Shift+Enter to add a new line)"
+            placeholder="Type your message... (Shift+Enter to add a new line)"
             ref={textarea.ref}
             onInput={textarea.onInput} // Hook's input handler (will only resize height on lg+ screens)
             onKeyDown={(e) => {

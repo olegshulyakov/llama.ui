@@ -9,17 +9,17 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
-import { useMessageContext } from '../context/message.context';
-import { classNames } from '../utils/misc';
-import StorageUtils from '../utils/storage';
-import { Conversation } from '../utils/types';
+import { useChatContext } from '../context/chat';
+import StorageUtils from '../database';
+import { Conversation } from '../types';
+import { classNames } from '../utils';
 import { useModals } from './ModalProvider';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const toggleDrawerRef = useRef<HTMLInputElement>(null);
 
-  const { viewingChat, isGenerating } = useMessageContext();
+  const { viewingChat, isGenerating } = useChatContext();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const currConv = useMemo(() => viewingChat?.conv ?? null, [viewingChat]);
@@ -134,7 +134,7 @@ export default function Sidebar() {
                         )
                       ) {
                         toast.success('Conversation deleted');
-                        StorageUtils.remove(conv.id);
+                        StorageUtils.deleteConversation(conv.id);
                         navigate('/');
                       }
                     }}

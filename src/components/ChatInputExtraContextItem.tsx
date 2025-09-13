@@ -3,9 +3,9 @@ import {
   SpeakerWaveIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { MessageExtra } from '../utils/types';
 import { useState } from 'react';
-import { classNames } from '../utils/misc';
+import { MessageExtra } from '../types';
+import { classNames } from '../utils';
 
 export default function ChatInputExtraContextItem({
   items,

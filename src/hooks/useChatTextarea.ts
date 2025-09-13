@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { throttle } from '../utils/misc';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { throttle } from '../utils';
 
 // Media Query for detecting "large" screens (matching Tailwind's lg: breakpoint)
 const LARGE_SCREEN_MQ = '(min-width: 1024px)';

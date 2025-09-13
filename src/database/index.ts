@@ -11,7 +11,7 @@ import {
   ExportJsonStructure,
   Message,
   TimingReport,
-} from './types';
+} from '../types';
 
 // --- Event Handling ---
 
@@ -251,7 +251,7 @@ const StorageUtils = {
   },
 
   /**
-   * Updates the name and lastModified timestamp of an existing conversation.
+   * Updates the name of an existing conversation.
    * @param convId The ID of the conversation to update.
    * @param name The new name for the conversation.
    * @returns A promise that resolves when the update is complete.
@@ -259,7 +259,6 @@ const StorageUtils = {
   async updateConversationName(convId: string, name: string): Promise<void> {
     await db.conversations.update(convId, {
       name,
-      lastModified: Date.now(),
     });
     dispatchConversationChange(convId);
   },
@@ -318,11 +317,88 @@ const StorageUtils = {
   },
 
   /**
+   * Removes a message and all its siblings.
+   * @param msg The message to remove.
+   * @returns A promise that resolves when the message is removed.
+   */
+  async deleteMessage(
+    msg: Pick<Message, 'id' | 'convId' | 'parent' | 'children'>
+  ) {
+    const { convId, id: msgId, parent: parentId } = msg;
+
+    // Check if conversation exists
+    const conv = await this.getOneConversation(msg.convId);
+    if (!conv) {
+      throw new Error(`Conversation is not found`);
+    }
+
+    // Check if message exists
+    const convMsgs = await this.getMessages(msg.convId);
+    if (!convMsgs.some((msg) => msg.id === msgId)) {
+      throw new Error(`Remove message is not found in conversation`);
+    }
+
+    // Create cache for quick lookup
+    const searchCache = new Map<number, Message>();
+    convMsgs.forEach((m) => searchCache.set(m.id, m));
+
+    // Get the list of messages to delete
+    const toDelete = new Set<number>();
+    const queue = [msg.id];
+    while (queue.length > 0) {
+      const id = queue.shift()!;
+      if (toDelete.has(id)) continue;
+
+      toDelete.add(id);
+      const msg = searchCache.get(id);
+      if (msg && msg.children.length > 0) {
+        queue.push(...msg.children);
+      }
+    }
+
+    // Get the list of messages to update children
+    const isValidChild = (id: number) =>
+      !toDelete.has(id) && searchCache.has(id);
+    const toUpdateChildren: { key: number; changes: { children: number[] } }[] =
+      [];
+    convMsgs.forEach((m) => {
+      if (toDelete.has(m.id)) return;
+      if (m.children.some((id) => !isValidChild(id))) {
+        toUpdateChildren.push({
+          key: m.id,
+          changes: {
+            children: m.children.filter(isValidChild),
+          },
+        });
+      }
+    });
+
+    await db.transaction('rw', db.conversations, db.messages, async () => {
+      // Update orphaned children array
+      if (toUpdateChildren.length > 0) {
+        await db.messages.bulkUpdate(toUpdateChildren);
+      }
+
+      // Delete messages
+      await db.messages.bulkDelete(Array.from(toDelete));
+
+      // Update conversation currNode
+      if (toDelete.has(conv.currNode)) {
+        await db.conversations.update(msg.convId, {
+          lastModified: Date.now(),
+          currNode: parentId,
+        });
+      }
+    });
+    dispatchConversationChange(convId);
+  },
+
+  /**
    * Removes a conversation and all its associated messages.
    * @param convId The ID of the conversation to remove.
    * @returns A promise that resolves when the conversation is removed.
    */
-  async remove(convId: string): Promise<void> {
+  async deleteConversation(convId: string): Promise<void> {
     await db.transaction('rw', db.conversations, db.messages, async () => {
       await db.conversations.delete(convId);
       await db.messages.where('convId').equals(convId).delete();

@@ -9,22 +9,29 @@ import {
   ShareIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
-import { useAppContext } from '../context/app.context';
-import { useMessageContext } from '../context/message.context';
+import { useAppContext } from '../context/app';
+import { useChatContext } from '../context/chat';
+import StorageUtils from '../database';
+import { useChatExtraContext } from '../hooks/useChatExtraContext';
 import * as lang from '../lang/en.json';
-import { timeFormatter } from '../utils/common';
-import { classNames, copyStr, splitMessageContent } from '../utils/misc';
-import { Message, MessageExtra, PendingMessage } from '../utils/types';
+import { Message, MessageExtra, PendingMessage } from '../types';
+import {
+  classNames,
+  copyStr,
+  splitMessageContent,
+  timeFormatter,
+} from '../utils';
 import ChatInputExtraContextItem from './ChatInputExtraContextItem';
 import { DropzoneArea } from './DropzoneArea';
 import MarkdownDisplay, { CopyButton } from './MarkdownDisplay';
+import { useModals } from './ModalProvider';
 import TextToSpeech, {
   getSpeechSynthesisVoiceByName,
   IS_SPEECH_SYNTHESIS_SUPPORTED,
 } from './TextToSpeech';
-import { useChatExtraContext } from './useChatExtraContext';
 
 interface SplitMessage {
   content: PendingMessage['content'];
@@ -291,6 +298,11 @@ export default function ChatMessage({
             text={content ?? ''}
           />
 
+          <DeleteButton
+            className="btn btn-ghost w-8 h-8 p-0"
+            msg={msg as Message}
+          />
+
           <BranchButton
             className="btn btn-ghost w-8 h-8 p-0"
             msg={msg as Message}
@@ -468,6 +480,31 @@ const PlayButton = ({
   );
 };
 
+const DeleteButton = ({
+  className,
+  msg,
+}: {
+  className?: string;
+  msg: Message;
+}) => {
+  const { showConfirm } = useModals();
+  return (
+    <button
+      className={className}
+      onClick={async () => {
+        if (await showConfirm('Are you sure to delete this message?')) {
+          await StorageUtils.deleteMessage(msg);
+        }
+      }}
+      disabled={!msg.content}
+      title="Delete"
+      aria-label="Delete this message"
+    >
+      <TrashIcon className="h-4 w-4" />
+    </button>
+  );
+};
+
 const BranchButton = ({
   className,
   msg,
@@ -475,7 +512,7 @@ const BranchButton = ({
   className?: string;
   msg: Message;
 }) => {
-  const { branchMessage } = useMessageContext();
+  const { branchMessage } = useChatContext();
   return (
     <button
       className={className}

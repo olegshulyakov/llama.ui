@@ -1,34 +1,43 @@
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  CallbackGeneratedChunk,
-  useMessageContext,
-} from '../context/message.context';
+import { ChatInput } from '../components/ChatInput';
+import { useAppContext } from '../context/app';
+import { CallbackGeneratedChunk, useChatContext } from '../context/chat';
+import StorageUtils from '../database';
 import * as lang from '../lang/en.json';
-import { getUniqueRandomElements } from '../utils/misc';
-import { MessageExtra } from '../utils/types';
-import { ChatInput } from './ChatInput.tsx';
-import StorageUtils from '../utils/storage.ts';
+import { MessageExtra } from '../types';
+import { getUniqueRandomElements } from '../utils';
 
 const SAMPLE_PROMPTS_COUNT = 4;
 
 export default function WelcomeScreen() {
   const navigate = useNavigate();
-  const { sendMessage } = useMessageContext();
+  const {
+    config: { systemMessage },
+  } = useAppContext();
+  const { sendMessage } = useChatContext();
 
-  const handleSend = async (
-    content: string,
-    extra: MessageExtra[] | undefined
-  ) => {
-    const conv = await StorageUtils.createConversation(
-      content.substring(0, 256)
-    );
-    const convId = conv.id;
-    const leafNodeId = conv.currNode;
-    // if user is creating a new conversation, redirect to the new conversation
-    await navigate(`/chat/${convId}`);
-    const onChunk: CallbackGeneratedChunk = (_) => {};
-    return sendMessage(convId, leafNodeId, content, extra, onChunk);
-  };
+  const handleSend = useCallback(
+    async (content: string, extra: MessageExtra[] | undefined) => {
+      const conv = await StorageUtils.createConversation(
+        content.substring(0, 256)
+      );
+      // if user is creating a new conversation, redirect to the new conversation
+      await navigate(`/chat/${conv.id}`);
+      const onChunk: CallbackGeneratedChunk = (_) => {};
+      return sendMessage({
+        convId: conv.id,
+        type: 'text',
+        role: 'user',
+        parent: conv.currNode,
+        content,
+        extra,
+        system: systemMessage,
+        onChunk,
+      });
+    },
+    [systemMessage, navigate, sendMessage]
+  );
 
   return (
     <div className="flex flex-col h-full w-full xl:max-w-[900px] mx-auto">

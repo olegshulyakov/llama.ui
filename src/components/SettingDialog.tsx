@@ -8,15 +8,16 @@ import {
   ChatBubbleLeftRightIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   CircleStackIcon,
-  CloudArrowDownIcon,
   CloudArrowUpIcon,
   Cog6ToothIcon,
   CogIcon,
   CpuChipIcon,
+  EllipsisVerticalIcon,
   EyeIcon,
   FunnelIcon,
   HandRaisedIcon,
   PencilIcon,
+  PlayCircleIcon,
   RocketLaunchIcon,
   SignalIcon,
   SpeakerWaveIcon,
@@ -32,33 +33,34 @@ import {
   SYNTAX_THEMES,
   THEMES,
 } from '../config';
-import { useAppContext } from '../context/app.context';
-import { useInferenceContext } from '../context/inference.context';
+import { useAppContext } from '../context/app';
+import { useInferenceContext } from '../context/inference';
+import StorageUtils from '../database';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import lang from '../lang/en.json';
-import { dateFormatter, Dropdown, OpenInNewTab } from '../utils/common';
-import { InferenceApiModel } from '../utils/inferenceApi';
-import {
-  classNames,
-  isBoolean,
-  isNumeric,
-  isString,
-  normalizeUrl,
-} from '../utils/misc';
-import StorageUtils from '../utils/storage';
 import {
   Configuration,
   ConfigurationKey,
   ConfigurationPreset,
+  InferenceApiModel,
   InferenceProvidersKey,
   ProviderOption,
-} from '../utils/types';
+} from '../types';
+import {
+  classNames,
+  dateFormatter,
+  isBoolean,
+  isNumeric,
+  isString,
+  normalizeUrl,
+} from '../utils';
+import { Dropdown, OpenInNewTab } from './common';
 import { useModals } from './ModalProvider';
 import TextToSpeech, {
   getSpeechSynthesisVoiceByName,
   getSpeechSynthesisVoices,
   IS_SPEECH_SYNTHESIS_SUPPORTED,
 } from './TextToSpeech';
-import { useDebouncedCallback } from './useDebouncedCallback';
 
 // --- Type Definitions ---
 enum SettingInputType {
@@ -1010,7 +1012,7 @@ const SettingsModalDropdown: React.FC<
   }
 > = ({ configKey, field, options, filterable = false, value, onChange }) => {
   const renderOption = (option: DropdownOption) => (
-    <span>
+    <span className="truncate">
       {option.icon && (
         <img
           src={normalizeUrl(option.icon, import.meta.env.BASE_URL)}
@@ -1284,44 +1286,70 @@ const PresetManager: FC<{
       )}
 
       {presets.length > 0 && (
-        <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+        <div className="grid grid-cols-1 gap-2">
           {presets
             .sort((a, b) => b.createdAt - a.createdAt)
             .map((preset) => (
               <div key={preset.id} className="card bg-base-200 p-3">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center">
+                  <div className="grow">
                     <h4 className="font-medium">{preset.name}</h4>
                     <p className="text-xs opacity-40">
                       Created: {dateFormatter.format(preset.createdAt)}
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      className="btn btn-ghost w-8 h-8 p-0 rounded-full"
-                      onClick={() => handleRenamePreset(preset)}
-                      title="Rename preset"
-                      aria-label="Rename preset"
-                    >
-                      <PencilIcon className="w-5 h-5" />
-                    </button>
+                  <div className="min-w-18 grid grid-cols-2 gap-2">
                     <button
                       className="btn btn-ghost w-8 h-8 p-0 rounded-full"
                       onClick={() => handleLoadPreset(preset)}
                       title="Load preset"
                       aria-label="Load preset"
                     >
-                      <CloudArrowDownIcon className="w-5 h-5" />
+                      <PlayCircleIcon className="w-5 h-5" />
                     </button>
-                    <button
-                      className="btn btn-ghost w-8 h-8 p-0 rounded-full"
-                      onClick={() => handleDeletePreset(preset)}
-                      title="Delete preset"
-                      aria-label="Delete preset"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+
+                    {/* dropdown */}
+                    <div tabIndex={0} className="dropdown dropdown-end">
+                      <button
+                        className="btn btn-ghost w-8 h-8 p-0 rounded-full"
+                        title="More"
+                        aria-label="Show more actions"
+                      >
+                        <EllipsisVerticalIcon className="w-5 h-5" />
+                      </button>
+
+                      {/* dropdown menu */}
+                      <ul
+                        aria-label="More actions"
+                        role="menu"
+                        tabIndex={-1}
+                        className="dropdown-content menu rounded-box bg-base-100 max-w-60 p-2 shadow-2xl"
+                      >
+                        <li role="menuitem" tabIndex={0}>
+                          <button
+                            type="button"
+                            onClick={() => handleRenamePreset(preset)}
+                            title="Rename preset"
+                            aria-label="Rename preset"
+                          >
+                            <PencilIcon className={ICON_CLASSNAME} />
+                            Rename
+                          </button>
+                        </li>
+                        <li role="menuitem" tabIndex={0} className="text-error">
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePreset(preset)}
+                            title="Delete preset"
+                            aria-label="Delete preset"
+                          >
+                            <TrashIcon className={ICON_CLASSNAME} />
+                            Delete
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>

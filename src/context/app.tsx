@@ -6,10 +6,10 @@ import React, {
   useState,
 } from 'react';
 import toast from 'react-hot-toast';
-import usePrefersColorScheme from '../components/usePrefersColorScheme';
 import { CONFIG_DEFAULT, SYNTAX_THEMES } from '../config';
-import StorageUtils from '../utils/storage';
-import { Configuration, ConfigurationPreset } from '../utils/types';
+import StorageUtils from '../database';
+import usePrefersColorScheme from '../hooks/usePrefersColorScheme';
+import { Configuration, ConfigurationPreset } from '../types';
 
 interface AppContextValue {
   config: Configuration;
