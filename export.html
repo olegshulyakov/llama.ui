@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Export WebUI Database</title>
+    <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.11/dist/dexie.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .container {
+        text-align: center;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 10px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      .status {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WebUI Database Export</h1>
+      <button id="exportBtn">Export Database</button>
+      <div id="status" class="status"></div>
+    </div>
+
+    <script>
+      // from src/database
+      const db = new Dexie('LlamacppWebui');
+      db.version(1).stores({
+        conversations: '&id, lastModified',
+        messages: '&id, convId, [convId+id], timestamp',
+        userConfigurations: '&id, name',
+      });
+
+      async function exportDB() {
+        try {
+          const exportData = await db.transaction('r', db.tables, async () => {
+            const data = [];
+            for (const table of db.tables) {
+              const rows = await table.toArray();
+              data.push({
+                table: table.name,
+                rows: rows,
+              });
+            }
+            return data;
+          });
+          return exportData;
+        } catch (error) {
+          console.error('Export error:', error);
+          throw error;
+        }
+      }
+
+      function downloadJson(data, filename = 'llamacpp-webui-export.json') {
+        try {
+          const jsonString = JSON.stringify(data, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.style.display = 'none';
+
+          document.body.appendChild(a);
+          a.click();
+
+          // Clean up
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+
+          return true;
+        } catch (error) {
+          console.error('Download error:', error);
+          return false;
+        }
+      }
+
+      function updateStatus(message, type = 'info') {
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = message;
+        statusElement.className = `status ${type}`;
+      }
+
+      // Event listener for export button
+      document
+        .getElementById('exportBtn')
+        .addEventListener('click', async () => {
+          const button = document.getElementById('exportBtn');
+          button.disabled = true;
+          updateStatus('Exporting database...', 'info');
+
+          try {
+            // Export the database
+            const exportData = await exportDB();
+
+            // Create filename with timestamp
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const filename = `llamacpp-webui-export-${timestamp}.json`;
+
+            // Download the file
+            const success = downloadJson(exportData, filename);
+
+            if (success) {
+              updateStatus(
+                `Database exported successfully! File: ${filename}`,
+                'success'
+              );
+
+              // Log some statistics
+              let totalRows = 0;
+              exportData.forEach((table) => {
+                totalRows += table.rows.length;
+                console.log(`Table ${table.table}: ${table.rows.length} rows`);
+              });
+
+              console.log(
+                `Total tables: ${exportData.length}, Total rows: ${totalRows}`
+              );
+            } else {
+              updateStatus('Failed to create download file.', 'error');
+            }
+          } catch (error) {
+            console.error('Export failed:', error);
+            updateStatus(`Export failed: ${error.message}`, 'error');
+          } finally {
+            button.disabled = false;
+          }
+        });
+
+      async function initialize() {
+        try {
+          await db.open();
+          updateStatus('Database connected. Ready to export.', 'info');
+
+          // Log available tables
+          console.log(
+            'Available tables:',
+            db.tables.map((t) => t.name)
+          );
+        } catch (error) {
+          console.error('Database initialization error:', error);
+          updateStatus(
+            'Cannot connect to database. Make sure the web UI has been used before.',
+            'error'
+          );
+          document.getElementById('exportBtn').disabled = true;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+  </body>
+</html>
