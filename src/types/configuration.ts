@@ -1,3 +1,5 @@
+export type ScreenSize = 'mobile' | 'tablet' | 'desktop';
+
 export type ProviderOption = {
   name: string;
   baseUrl: string;

@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { CONFIG_DEFAULT, SYNTAX_THEMES } from '../config';
 import StorageUtils from '../database';
 import usePrefersColorScheme from '../hooks/usePrefersColorScheme';
-import { Configuration, ConfigurationPreset } from '../types';
+import { Configuration, ConfigurationPreset, ScreenSize } from '../types';
 
 interface AppContextValue {
   config: Configuration;
@@ -24,6 +24,7 @@ interface AppContextValue {
   currentSyntaxTheme: string;
   switchSyntaxTheme: (theme: string) => void;
   colorScheme: string;
+  screenSize: ScreenSize;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -42,6 +43,26 @@ export const AppContextProvider = ({
   const [currentSyntaxTheme, setCurrentSyntaxTheme] = useState<string>(
     StorageUtils.getSyntaxTheme()
   );
+  const [screenSize, setScreenSize] = useState<ScreenSize>('mobile');
+
+  useEffect(() => {
+    // https://tailwindcss.com/docs/responsive-design
+    const checkInnerWidth = () => {
+      const innerWidth = window.innerWidth;
+      if (innerWidth < 768) {
+        setScreenSize('mobile');
+      } else if (innerWidth < 1280) {
+        setScreenSize('tablet');
+      } else {
+        setScreenSize('desktop');
+      }
+    };
+
+    checkInnerWidth();
+    window.addEventListener('resize', checkInnerWidth);
+
+    return () => window.removeEventListener('resize', checkInnerWidth);
+  }, []);
 
   // --- Main Functions ---
 
@@ -137,6 +158,7 @@ export const AppContextProvider = ({
         currentSyntaxTheme,
         switchSyntaxTheme,
         colorScheme,
+        screenSize,
       }}
     >
       {children}
