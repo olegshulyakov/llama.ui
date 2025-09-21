@@ -8,10 +8,11 @@ import { useNavigate } from 'react-router';
 import { useAppContext } from '../context/app';
 import { useChatContext } from '../context/chat';
 import { useInferenceContext } from '../context/inference';
-import lang from '../lang/en.json';
+import { useLang } from '../lang';
 import { Dropdown } from './common';
 
 export default function Header() {
+  const { lang } = useLang();
   const navigate = useNavigate();
   const {
     config,
@@ -30,7 +31,7 @@ export default function Header() {
         : currConv
           ? currConv.name
           : lang['header.title.noChat'],
-    [currConv, showSettings]
+    [currConv, showSettings, lang]
   );
 
   const selectedModel = useMemo(() => {

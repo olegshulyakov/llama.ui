@@ -22,7 +22,7 @@ import {
 } from './context/inference';
 import { useDebouncedCallback } from './hooks/useDebouncedCallback';
 import { usePWAUpdatePrompt } from './hooks/usePWAUpdatePrompt';
-import * as lang from './lang/en.json';
+import { useLang } from './lang';
 import ChatScreen from './pages/ChatScreen';
 import Settings from './pages/Settings';
 import WelcomeScreen from './pages/WelcomeScreen';
@@ -58,6 +58,7 @@ const App: FC = () => {
 };
 
 const AppLayout: FC = () => {
+  const { lang } = useLang();
   const navigate = useNavigate();
   const { config, showSettings } = useAppContext();
   const { models } = useInferenceContext();
@@ -93,7 +94,7 @@ const AppLayout: FC = () => {
         }
       );
     },
-    [config.baseUrl, navigate]
+    [config.baseUrl, navigate, lang]
   );
 
   const delayedNoModels = useDebouncedCallback(
@@ -124,7 +125,7 @@ const AppLayout: FC = () => {
         }
       );
     }
-  }, [isNewVersion, handleUpdate]);
+  }, [isNewVersion, handleUpdate, lang]);
 
   // Handle model checking
   useEffect(() => {

@@ -3,6 +3,40 @@ import { defineConfig } from 'vite';
 import loadVersion from 'vite-plugin-package-version';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const SUPPORTED_LANGUAGES = new Set(['en', 'fr']);
+
+const envLanguage =
+  process.env.VITE_APP_LANG ??
+  process.env.APP_LANG ??
+  process.env.npm_config_lang;
+
+const inlineLanguageArgument = process.argv.find((arg) =>
+  arg.startsWith('--lang=')
+);
+
+const separatedLanguageArgumentIndex = process.argv.indexOf('--lang');
+
+const separatedLanguageArgument =
+  separatedLanguageArgumentIndex >= 0
+    ? process.argv[separatedLanguageArgumentIndex + 1]
+    : undefined;
+
+const requestedLanguage =
+  envLanguage ??
+  inlineLanguageArgument?.split('=')[1] ??
+  separatedLanguageArgument;
+
+const normalizedRequestedLanguage =
+  typeof requestedLanguage === 'string'
+    ? requestedLanguage.trim().toLowerCase()
+    : undefined;
+
+const buildLanguage =
+  normalizedRequestedLanguage &&
+  SUPPORTED_LANGUAGES.has(normalizedRequestedLanguage)
+    ? normalizedRequestedLanguage
+    : 'en';
+
 export default defineConfig({
   plugins: [
     react(),
@@ -133,6 +167,9 @@ export default defineConfig({
       },
     }),
   ],
+  define: {
+    __APP_LANG__: JSON.stringify(buildLanguage),
+  },
   build: {
     rollupOptions: {
       output: {

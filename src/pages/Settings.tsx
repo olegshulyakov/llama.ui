@@ -52,7 +52,7 @@ import { useAppContext } from '../context/app';
 import { useChatContext } from '../context/chat';
 import { useInferenceContext } from '../context/inference';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
-import lang from '../lang/en.json';
+import { useLang, type LanguageResource } from '../lang';
 import {
   Configuration,
   ConfigurationKey,
@@ -160,6 +160,7 @@ const toSection = (
 };
 
 const toInput = (
+  lang: LanguageResource,
   type: SettingFieldInputType,
   key: ConfigurationKey,
   disabled: boolean = false,
@@ -175,6 +176,7 @@ const toInput = (
   };
 };
 const toDropdown = (
+  lang: LanguageResource,
   key: ConfigurationKey,
   options: DropdownOption[],
   filterable: boolean = false,
@@ -201,6 +203,7 @@ const DELIMETER: SettingFieldCustom = {
 const UnusedCustomField: React.FC = () => null;
 
 const getSettingTabsConfiguration = (
+  lang: LanguageResource,
   config: Configuration,
   models: InferenceApiModel[]
 ): SettingTab[] => [
@@ -215,6 +218,7 @@ const getSettingTabsConfiguration = (
     fields: [
       toSection('Inference Provider'),
       toDropdown(
+        lang,
         'provider',
         Object.entries(INFERENCE_PROVIDERS).map(
           ([key, val]: [string, ProviderOption]) => ({
@@ -225,12 +229,14 @@ const getSettingTabsConfiguration = (
         )
       ),
       toInput(
+        lang,
         SettingInputType.SHORT_INPUT,
         'baseUrl',
         !INFERENCE_PROVIDERS[config.provider]?.allowCustomBaseUrl
       ),
-      toInput(SettingInputType.SHORT_INPUT, 'apiKey'),
+      toInput(lang, SettingInputType.SHORT_INPUT, 'apiKey'),
       toDropdown(
+        lang,
         'model',
         models.map((m) => ({
           value: m.id,
@@ -246,7 +252,7 @@ const getSettingTabsConfiguration = (
 
       DELIMETER,
       DELIMETER,
-      toInput(SettingInputType.LONG_INPUT, 'systemMessage'),
+      toInput(lang, SettingInputType.LONG_INPUT, 'systemMessage'),
     ],
   },
 
@@ -259,7 +265,7 @@ const getSettingTabsConfiguration = (
       </>
     ),
     fields: [
-      toInput(SettingInputType.SHORT_INPUT, 'initials'),
+      toInput(lang, SettingInputType.SHORT_INPUT, 'initials'),
       {
         type: SettingInputType.CUSTOM,
         key: 'theme-manager',
@@ -283,6 +289,7 @@ const getSettingTabsConfiguration = (
         <SpeakerWaveIcon className={ICON_CLASSNAME} />
       ),
       toDropdown(
+        lang,
         'ttsVoice',
         !IS_SPEECH_SYNTHESIS_SUPPORTED
           ? []
@@ -293,6 +300,7 @@ const getSettingTabsConfiguration = (
         true
       ),
       toInput(
+        lang,
         SettingInputType.RANGE_INPUT,
         'ttsPitch',
         !IS_SPEECH_SYNTHESIS_SUPPORTED,
@@ -303,6 +311,7 @@ const getSettingTabsConfiguration = (
         }
       ),
       toInput(
+        lang,
         SettingInputType.RANGE_INPUT,
         'ttsRate',
         !IS_SPEECH_SYNTHESIS_SUPPORTED,
@@ -313,6 +322,7 @@ const getSettingTabsConfiguration = (
         }
       ),
       toInput(
+        lang,
         SettingInputType.RANGE_INPUT,
         'ttsVolume',
         !IS_SPEECH_SYNTHESIS_SUPPORTED,
@@ -365,13 +375,13 @@ const getSettingTabsConfiguration = (
         'Chat',
         <ChatBubbleLeftEllipsisIcon className={ICON_CLASSNAME} />
       ),
-      toInput(SettingInputType.SHORT_INPUT, 'pasteLongTextToFileLen'),
-      toInput(SettingInputType.CHECKBOX, 'pdfAsImage'),
+      toInput(lang, SettingInputType.SHORT_INPUT, 'pasteLongTextToFileLen'),
+      toInput(lang, SettingInputType.CHECKBOX, 'pdfAsImage'),
 
       /* Performance */
       DELIMETER,
       toSection('Performance', <RocketLaunchIcon className={ICON_CLASSNAME} />),
-      toInput(SettingInputType.CHECKBOX, 'showTokensPerSecond'),
+      toInput(lang, SettingInputType.CHECKBOX, 'showTokensPerSecond'),
 
       /* Reasoning */
       DELIMETER,
@@ -379,8 +389,8 @@ const getSettingTabsConfiguration = (
         'Reasoning',
         <ChatBubbleOvalLeftEllipsisIcon className={ICON_CLASSNAME} />
       ),
-      toInput(SettingInputType.CHECKBOX, 'showThoughtInProgress'),
-      toInput(SettingInputType.CHECKBOX, 'excludeThoughtOnReq'),
+      toInput(lang, SettingInputType.CHECKBOX, 'showThoughtInProgress'),
+      toInput(lang, SettingInputType.CHECKBOX, 'excludeThoughtOnReq'),
     ],
   },
 
@@ -429,9 +439,10 @@ const getSettingTabsConfiguration = (
     fields: [
       /* Generation */
       toSection('Generation', <CogIcon className={ICON_CLASSNAME} />),
-      toInput(SettingInputType.CHECKBOX, 'overrideGenerationOptions'),
+      toInput(lang, SettingInputType.CHECKBOX, 'overrideGenerationOptions'),
       ...['temperature', 'top_k', 'top_p', 'min_p', 'max_tokens'].map((key) =>
         toInput(
+          lang,
           SettingInputType.SHORT_INPUT,
           key as ConfigurationKey,
           !config['overrideGenerationOptions']
@@ -441,7 +452,7 @@ const getSettingTabsConfiguration = (
       /* Samplers */
       DELIMETER,
       toSection('Samplers', <FunnelIcon className={ICON_CLASSNAME} />),
-      toInput(SettingInputType.CHECKBOX, 'overrideSamplersOptions'),
+      toInput(lang, SettingInputType.CHECKBOX, 'overrideSamplersOptions'),
       ...[
         'samplers',
         'dynatemp_range',
@@ -451,6 +462,7 @@ const getSettingTabsConfiguration = (
         'xtc_threshold',
       ].map((key) =>
         toInput(
+          lang,
           SettingInputType.SHORT_INPUT,
           key as ConfigurationKey,
           !config['overrideSamplersOptions']
@@ -460,7 +472,7 @@ const getSettingTabsConfiguration = (
       /* Penalties */
       DELIMETER,
       toSection('Penalties', <HandRaisedIcon className={ICON_CLASSNAME} />),
-      toInput(SettingInputType.CHECKBOX, 'overridePenaltyOptions'),
+      toInput(lang, SettingInputType.CHECKBOX, 'overridePenaltyOptions'),
       ...[
         'repeat_last_n',
         'repeat_penalty',
@@ -472,6 +484,7 @@ const getSettingTabsConfiguration = (
         'dry_penalty_last_n',
       ].map((key) =>
         toInput(
+          lang,
           SettingInputType.SHORT_INPUT,
           key as ConfigurationKey,
           !config['overridePenaltyOptions']
@@ -481,7 +494,7 @@ const getSettingTabsConfiguration = (
       /* Custom */
       DELIMETER,
       toSection('Custom', <CpuChipIcon className={ICON_CLASSNAME} />),
-      toInput(SettingInputType.LONG_INPUT, 'custom'),
+      toInput(lang, SettingInputType.LONG_INPUT, 'custom'),
     ],
   },
 
@@ -520,13 +533,14 @@ const getSettingTabsConfiguration = (
           </div>
         ),
       },
-      toInput(SettingInputType.CHECKBOX, 'pyIntepreterEnabled'),
+      toInput(lang, SettingInputType.CHECKBOX, 'pyIntepreterEnabled'),
     ],
   },
 ];
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { lang } = useLang();
   const {
     config,
     saveConfig,
@@ -547,8 +561,8 @@ export default function Settings() {
     Object.assign([], models)
   );
   const settingTabs = useMemo<SettingTab[]>(
-    () => getSettingTabsConfiguration(localConfig, localModels),
-    [localConfig, localModels]
+    () => getSettingTabsConfiguration(lang, localConfig, localModels),
+    [lang, localConfig, localModels]
   );
   const currConv = useMemo(() => viewingChat?.conv ?? null, [viewingChat]);
 
@@ -1087,6 +1101,7 @@ const DelimeterComponent: React.FC = () => (
 );
 
 const ThemeController: FC = () => {
+  const { lang } = useLang();
   const dataThemes = ['auto', ...THEMES].map((theme) => ({
     value: theme,
     label: theme,
@@ -1200,6 +1215,7 @@ const PresetManager: FC<{
   onSavePreset: (name: string, config: Configuration) => Promise<void>;
   onRemovePreset: (name: string) => Promise<void>;
 }> = ({ config, onLoadConfig, presets, onSavePreset, onRemovePreset }) => {
+  const { lang } = useLang();
   const { showConfirm, showPrompt } = useModals();
 
   const handleSavePreset = async () => {

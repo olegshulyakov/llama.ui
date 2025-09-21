@@ -16,7 +16,7 @@ import { useAppContext } from '../context/app';
 import { useChatContext } from '../context/chat';
 import StorageUtils from '../database';
 import { useChatExtraContext } from '../hooks/useChatExtraContext';
-import * as lang from '../lang/en.json';
+import { useLang } from '../lang';
 import { Message, MessageExtra, PendingMessage } from '../types';
 import {
   classNames,
@@ -62,6 +62,7 @@ export default function ChatMessage({
   const {
     config: { initials, showTokensPerSecond },
   } = useAppContext();
+  const { lang } = useLang();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const timings = useMemo(
     () =>
