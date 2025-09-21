@@ -36,6 +36,15 @@ This repository is a fork of [llama.cpp](https://github.com/ggml-org/llama.cpp) 
 
 5. **Privacy Focused**: All data is stored locally in your browser - no cloud required!
 
+6. **Localized Interface**: English and French bundles ship with the app, and you can choose the language at build time.
+
+## 🌍 Localization & Language Overrides
+
+Want the interface in French instead of English? Pass `--lang fr` (or `VITE_APP_LANG=fr`) to any Vite command and the
+build ships with the French strings preselected. Each locale lives in its own `src/lang/<code>.json` file (for example,
+`fr.json`), covering both the UI labels and the random sample prompts shown on the welcome screen. Add or adjust the JSON
+and register the language in [`src/i18n.ts`](src/i18n.ts) to localize another language.
+
 ## 🚀 Getting Started in 60 Seconds!
 
 ### 💻 Standalone Mode (Zero Installation)
