@@ -1,4 +1,4 @@
-import { PlayIcon, StopIcon } from '@heroicons/react/24/outline';
+import { Play, Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChatContext } from '../context/chat';
@@ -170,7 +170,7 @@ export default function CanvasPyInterpreter() {
                 onClick={() => runCode(code)}
                 disabled={running}
               >
-                <PlayIcon className="h-6 w-6" />{' '}
+                <Play className="h-6 w-6" />{' '}
                 {t('codeRunner.canvasPyInterpreter.buttons.run')}
               </button>
               {showStopBtn && (
@@ -178,7 +178,7 @@ export default function CanvasPyInterpreter() {
                   className="btn btn-sm bg-base-100 ml-2"
                   onClick={() => interruptFn?.()}
                 >
-                  <StopIcon className="h-6 w-6" />{' '}
+                  <Square className="h-6 w-6" />{' '}
                   {t('codeRunner.canvasPyInterpreter.buttons.stop')}
                 </button>
               )}

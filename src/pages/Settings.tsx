@@ -1,31 +1,31 @@
 import {
-  ArrowDownTrayIcon,
-  ArrowPathIcon,
-  ArrowUpTrayIcon,
-  BeakerIcon,
-  BookmarkIcon,
-  ChatBubbleLeftEllipsisIcon,
-  ChatBubbleLeftRightIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-  CircleStackIcon,
-  CloudArrowUpIcon,
-  Cog6ToothIcon,
-  CogIcon,
-  CpuChipIcon,
-  EllipsisVerticalIcon,
-  EyeIcon,
-  FunnelIcon,
-  HandRaisedIcon,
-  PencilIcon,
-  PlayCircleIcon,
-  RocketLaunchIcon,
-  SignalIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-  SquaresPlusIcon,
-  TrashIcon,
-  TvIcon,
-} from '@heroicons/react/24/outline';
+  AudioLines,
+  Bookmark,
+  Brain,
+  CirclePlay,
+  CloudDownload,
+  CloudUpload,
+  Cog,
+  Cpu,
+  Database,
+  EllipsisVertical,
+  Eye,
+  FlaskConical,
+  Funnel,
+  Grid2X2Plus,
+  Hand,
+  MessageCircleMore,
+  MessagesSquare,
+  Monitor,
+  Pencil,
+  RefreshCw,
+  Rocket,
+  Settings as SettingsIcon,
+  Speech,
+  Trash,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import React, {
   FC,
   forwardRef,
@@ -206,7 +206,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <Cog6ToothIcon className={ICON_CLASSNAME} />
+        <SettingsIcon className={ICON_CLASSNAME} />
         {t('settings.tabs.general')}
       </>
     ),
@@ -252,14 +252,14 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <TvIcon className={ICON_CLASSNAME} />
+        <Monitor className={ICON_CLASSNAME} />
         {t('settings.tabs.ui')}
       </>
     ),
     fields: [
       toSection(
         t('settings.sections.userInterface'),
-        <TvIcon className={ICON_CLASSNAME} />
+        <Monitor className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.SHORT_INPUT, 'initials'),
       {
@@ -279,7 +279,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <SignalIcon className={ICON_CLASSNAME} />
+        <AudioLines className={ICON_CLASSNAME} />
         {t('settings.tabs.voice')}
       </>
     ),
@@ -287,7 +287,7 @@ const getSettingTabsConfiguration = (
       /* Text to Speech */
       toSection(
         t('settings.sections.textToSpeech'),
-        <SpeakerWaveIcon className={ICON_CLASSNAME} />
+        <Speech className={ICON_CLASSNAME} />
       ),
       toDropdown(
         'ttsVoice',
@@ -348,8 +348,8 @@ const getSettingTabsConfiguration = (
                 title="Play test message"
                 aria-label="Play test message"
               >
-                {!isPlaying && <SpeakerWaveIcon className={ICON_CLASSNAME} />}
-                {isPlaying && <SpeakerXMarkIcon className={ICON_CLASSNAME} />}
+                {!isPlaying && <Volume2 className={ICON_CLASSNAME} />}
+                {isPlaying && <VolumeX className={ICON_CLASSNAME} />}
                 {t('settings.textToSpeech.check.label')}
               </button>
             )}
@@ -363,14 +363,14 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <ChatBubbleLeftRightIcon className={ICON_CLASSNAME} />
+        <MessagesSquare className={ICON_CLASSNAME} />
         {t('settings.tabs.conversations')}
       </>
     ),
     fields: [
       toSection(
         t('settings.sections.chat'),
-        <ChatBubbleLeftEllipsisIcon className={ICON_CLASSNAME} />
+        <MessageCircleMore className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.SHORT_INPUT, 'pasteLongTextToFileLen'),
       toInput(SettingInputType.CHECKBOX, 'pdfAsImage'),
@@ -379,7 +379,7 @@ const getSettingTabsConfiguration = (
       DELIMITER,
       toSection(
         t('settings.sections.performance'),
-        <RocketLaunchIcon className={ICON_CLASSNAME} />
+        <Rocket className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.CHECKBOX, 'showTokensPerSecond'),
 
@@ -387,7 +387,7 @@ const getSettingTabsConfiguration = (
       DELIMITER,
       toSection(
         t('settings.sections.reasoning'),
-        <ChatBubbleOvalLeftEllipsisIcon className={ICON_CLASSNAME} />
+        <Brain className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.CHECKBOX, 'showThoughtInProgress'),
       toInput(SettingInputType.CHECKBOX, 'excludeThoughtOnReq'),
@@ -398,7 +398,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <BookmarkIcon className={ICON_CLASSNAME} />
+        <Bookmark className={ICON_CLASSNAME} />
         {t('settings.tabs.presets')}
       </>
     ),
@@ -415,7 +415,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <CircleStackIcon className={ICON_CLASSNAME} />
+        <Database className={ICON_CLASSNAME} />
         {t('settings.tabs.importExport')}
       </>
     ),
@@ -432,7 +432,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <SquaresPlusIcon className={ICON_CLASSNAME} />
+        <Grid2X2Plus className={ICON_CLASSNAME} />
         {t('settings.tabs.advanced')}
       </>
     ),
@@ -440,7 +440,7 @@ const getSettingTabsConfiguration = (
       /* Generation */
       toSection(
         t('settings.sections.generation'),
-        <CogIcon className={ICON_CLASSNAME} />
+        <Cog className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.CHECKBOX, 'overrideGenerationOptions'),
       ...['temperature', 'top_k', 'top_p', 'min_p', 'max_tokens'].map((key) =>
@@ -455,7 +455,7 @@ const getSettingTabsConfiguration = (
       DELIMITER,
       toSection(
         t('settings.sections.samplers'),
-        <FunnelIcon className={ICON_CLASSNAME} />
+        <Funnel className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.CHECKBOX, 'overrideSamplersOptions'),
       ...[
@@ -477,7 +477,7 @@ const getSettingTabsConfiguration = (
       DELIMITER,
       toSection(
         t('settings.sections.penalties'),
-        <HandRaisedIcon className={ICON_CLASSNAME} />
+        <Hand className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.CHECKBOX, 'overridePenaltyOptions'),
       ...[
@@ -501,7 +501,7 @@ const getSettingTabsConfiguration = (
       DELIMITER,
       toSection(
         t('settings.sections.custom'),
-        <CpuChipIcon className={ICON_CLASSNAME} />
+        <Cpu className={ICON_CLASSNAME} />
       ),
       toInput(SettingInputType.LONG_INPUT, 'custom'),
     ],
@@ -511,7 +511,7 @@ const getSettingTabsConfiguration = (
   {
     title: (
       <>
-        <BeakerIcon className={ICON_CLASSNAME} />
+        <FlaskConical className={ICON_CLASSNAME} />
         <Trans i18nKey="settings.sections.experimental" />
       </>
     ),
@@ -758,7 +758,7 @@ export default function Settings() {
                   )
                 }
               >
-                <ArrowPathIcon className={ICON_CLASSNAME} />
+                <RefreshCw className={ICON_CLASSNAME} />
                 <Trans i18nKey="settings.actionButtons.fetchModels" />
               </button>
             );
@@ -1347,7 +1347,7 @@ const PresetManager: FC<{
         title={t('settings.presetManager.buttons.save')}
         aria-label={t('settings.presetManager.ariaLabels.save')}
       >
-        <CloudArrowUpIcon className="w-5 h-5" />
+        <CloudUpload className="w-5 h-5" />
         <Trans i18nKey="settings.presetManager.buttons.save" />
       </button>
 
@@ -1384,7 +1384,7 @@ const PresetManager: FC<{
                       title={t('settings.presetManager.buttons.load')}
                       aria-label={t('settings.presetManager.ariaLabels.load')}
                     >
-                      <PlayCircleIcon className="w-5 h-5" />
+                      <CirclePlay className="w-5 h-5" />
                     </button>
 
                     {/* dropdown */}
@@ -1394,7 +1394,7 @@ const PresetManager: FC<{
                         title={t('settings.presetManager.buttons.more')}
                         aria-label={t('settings.presetManager.ariaLabels.more')}
                       >
-                        <EllipsisVerticalIcon className="w-5 h-5" />
+                        <EllipsisVertical className="w-5 h-5" />
                       </button>
 
                       {/* dropdown menu */}
@@ -1413,7 +1413,7 @@ const PresetManager: FC<{
                               'settings.presetManager.ariaLabels.rename'
                             )}
                           >
-                            <PencilIcon className={ICON_CLASSNAME} />
+                            <Pencil className={ICON_CLASSNAME} />
                             {t('settings.presetManager.buttons.rename')}
                           </button>
                         </li>
@@ -1426,7 +1426,7 @@ const PresetManager: FC<{
                               'settings.presetManager.ariaLabels.delete'
                             )}
                           >
-                            <TrashIcon className={ICON_CLASSNAME} />
+                            <Trash className={ICON_CLASSNAME} />
                             {t('settings.presetManager.buttons.delete')}
                           </button>
                         </li>
@@ -1485,13 +1485,13 @@ const ImportExportComponent: React.FC<{ onClose: () => void }> = ({
   return (
     <>
       <SettingsSectionLabel>
-        <ChatBubbleOvalLeftEllipsisIcon className={ICON_CLASSNAME} />
+        <MessageCircleMore className={ICON_CLASSNAME} />
         {t('settings.importExport.chatsSectionTitle')}
       </SettingsSectionLabel>
 
       <div className="grid grid-cols-[repeat(2,max-content)] gap-2">
         <button className="btn" onClick={onExport}>
-          <ArrowDownTrayIcon className={ICON_CLASSNAME} />
+          <CloudDownload className={ICON_CLASSNAME} />
           {t('settings.importExport.exportBtnLabel')}
         </button>
 
@@ -1509,7 +1509,7 @@ const ImportExportComponent: React.FC<{ onClose: () => void }> = ({
           tabIndex={0}
           role="button"
         >
-          <ArrowUpTrayIcon className={ICON_CLASSNAME} />
+          <CloudUpload className={ICON_CLASSNAME} />
           {t('settings.importExport.importBtnLabel')}
         </label>
       </div>
@@ -1517,7 +1517,7 @@ const ImportExportComponent: React.FC<{ onClose: () => void }> = ({
       <DelimeterComponent />
 
       <SettingsSectionLabel>
-        <EyeIcon className={ICON_CLASSNAME} />
+        <Eye className={ICON_CLASSNAME} />
         {t('settings.importExport.technicalDemoSectionTitle')}
       </SettingsSectionLabel>
 

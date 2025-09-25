@@ -1,17 +1,18 @@
 import {
-  ArrowPathIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CubeTransparentIcon,
-  DocumentDuplicateIcon,
-  ExclamationCircleIcon,
-  PaperClipIcon,
-  PencilSquareIcon,
-  ShareIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+  Atom,
+  Brain,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Gauge,
+  GitMerge,
+  Paperclip,
+  RefreshCw,
+  SquarePen,
+  Trash2,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/app';
@@ -223,7 +224,7 @@ export default function ChatMessage({
                 className="btn btn-ghost w-6 h-8 p-0"
                 onClick={() => prevSibling && onChangeSibling(prevSibling)}
                 disabled={!prevSibling}
-                icon={ChevronLeftIcon}
+                icon={ChevronLeft}
                 t={t}
                 titleKey="chatScreen.titles.previous"
                 ariaLabelKey="chatScreen.ariaLabels.switchToPrevious"
@@ -236,7 +237,7 @@ export default function ChatMessage({
                 className="btn btn-ghost w-6 h-8 p-0"
                 onClick={() => nextSibling && onChangeSibling(nextSibling)}
                 disabled={!nextSibling}
-                icon={ChevronRightIcon}
+                icon={ChevronRight}
                 t={t}
                 titleKey="chatScreen.titles.next"
                 ariaLabelKey="chatScreen.ariaLabels.switchToNext"
@@ -257,7 +258,7 @@ export default function ChatMessage({
               title={t('chatScreen.titles.regenerate')}
               aria-label={t('chatScreen.ariaLabels.regenerateResponse')}
             >
-              <ArrowPathIcon className="h-4 w-4" />
+              <RefreshCw className="h-4 w-4" />
             </button>
           )}
 
@@ -269,7 +270,7 @@ export default function ChatMessage({
               aria-label={t('chatScreen.ariaLabels.showPerformanceMetric')}
             >
               <div className="dropdown dropdown-hover dropdown-top">
-                <ExclamationCircleIcon className="h-4 w-4" />
+                <Gauge className="h-4 w-4" />
 
                 <div
                   tabIndex={0}
@@ -300,7 +301,7 @@ export default function ChatMessage({
             className="btn btn-ghost w-8 h-8 p-0"
             onClick={() => setIsEditing(msg.content !== null)}
             disabled={!msg.content}
-            icon={PencilSquareIcon}
+            icon={SquarePen}
             t={t}
             titleKey="chatScreen.titles.edit"
             ariaLabelKey="chatScreen.ariaLabels.editMessage"
@@ -310,7 +311,7 @@ export default function ChatMessage({
           <IntlIconButton
             className="btn btn-ghost w-8 h-8 p-0"
             onClick={handleCopy}
-            icon={DocumentDuplicateIcon}
+            icon={Copy}
             t={t}
             titleKey="chatScreen.titles.copy"
             ariaLabelKey="chatScreen.ariaLabels.copyContent"
@@ -333,7 +334,7 @@ export default function ChatMessage({
               }
             }}
             disabled={!msg.content}
-            icon={TrashIcon}
+            icon={Trash2}
             t={t}
             titleKey="chatScreen.titles.delete"
             ariaLabelKey="chatScreen.ariaLabels.deleteMessage"
@@ -347,7 +348,7 @@ export default function ChatMessage({
             t={t}
             titleKey="chatScreen.titles.branchChat"
             ariaLabelKey="chatScreen.ariaLabels.branchChatAfterMessage"
-            icon={ShareIcon}
+            icon={GitMerge}
           />
         </div>
       )}
@@ -396,7 +397,7 @@ function EditMessage({
               tabIndex={0}
               role="button"
             >
-              <PaperClipIcon className="h-5 w-5" />
+              <Paperclip className="h-5 w-5" />
             </label>
             <div className="grow" />
           </>
@@ -467,13 +468,13 @@ function ThoughtProcess({
         <div className="btn border-0 rounded-xl">
           {isThinking && (
             <>
-              <CubeTransparentIcon className="h-6 w-6 mr-1 p-0 animate-spin" />
+              <Atom className="h-6 w-6 mr-1 p-0 animate-spin" />
               <Trans i18nKey="chatScreen.labels.thinking" />
             </>
           )}
           {!isThinking && (
             <>
-              <CubeTransparentIcon className="h-6 w-6 mr-1 p-0" />
+              <Brain className="h-6 w-6 mr-1 p-0" />
               <Trans i18nKey="chatScreen.labels.thoughts" />
             </>
           )}
@@ -524,7 +525,7 @@ const PlayButton = ({
               t={t}
               titleKey="chatScreen.titles.play"
               ariaLabelKey="chatScreen.ariaLabels.playMessage"
-              icon={SpeakerWaveIcon}
+              icon={Volume2}
             />
           )}
           {isPlaying && (
@@ -535,7 +536,7 @@ const PlayButton = ({
               t={t}
               titleKey="chatScreen.titles.stop"
               ariaLabelKey="chatScreen.ariaLabels.stopMessage"
-              icon={SpeakerXMarkIcon}
+              icon={VolumeX}
             />
           )}
         </Fragment>

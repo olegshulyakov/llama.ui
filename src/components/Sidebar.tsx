@@ -1,11 +1,11 @@
 import {
-  ArrowDownTrayIcon,
-  EllipsisVerticalIcon,
-  PencilIcon,
-  PencilSquareIcon,
-  TrashIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+  Download,
+  MoreVertical,
+  Pencil,
+  SquarePen,
+  Trash,
+  X,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -71,7 +71,7 @@ export default function Sidebar() {
               role="button"
               tabIndex={0}
             >
-              <XMarkIcon className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </label>
 
             <label
@@ -90,7 +90,7 @@ export default function Sidebar() {
               title={t('header.buttons.newConv')}
               aria-label={t('header.ariaLabels.newConv')}
             >
-              <PencilSquareIcon className="w-5 h-5" />
+              <SquarePen className="w-5 h-5" />
             </button>
           </div>
 
@@ -237,7 +237,7 @@ function ConversationItem({
           title={t('sidebar.buttons.more')}
           aria-label={t('sidebar.ariaLabels.more')}
         >
-          <EllipsisVerticalIcon className="w-5 h-5" />
+          <MoreVertical className="w-5 h-5" />
         </button>
         {/* dropdown menu */}
         <ul
@@ -252,7 +252,7 @@ function ConversationItem({
               title={t('sidebar.buttons.rename')}
               aria-label={t('sidebar.ariaLabels.rename')}
             >
-              <PencilIcon className="w-4 h-4" />
+              <Pencil className="w-4 h-4" />
               <Trans i18nKey="sidebar.buttons.rename" />
             </button>
           </li>
@@ -262,7 +262,7 @@ function ConversationItem({
               title={t('sidebar.buttons.download')}
               aria-label={t('sidebar.ariaLabels.download')}
             >
-              <ArrowDownTrayIcon className="w-4 h-4" />
+              <Download className="w-4 h-4" />
               <Trans i18nKey="sidebar.buttons.download" />
             </button>
           </li>
@@ -277,7 +277,7 @@ function ConversationItem({
               title={t('sidebar.buttons.delete')}
               aria-label={t('sidebar.ariaLabels.delete')}
             >
-              <TrashIcon className="w-4 h-4" />
+              <Trash className="w-4 h-4" />
               <Trans i18nKey="sidebar.buttons.delete" />
             </button>
           </li>

@@ -1,8 +1,4 @@
-import {
-  Bars3Icon,
-  Cog8ToothIcon,
-  PencilSquareIcon,
-} from '@heroicons/react/24/outline';
+import { Cog, Menu, SquarePen } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -44,7 +40,7 @@ export default function Header() {
       <section className="flex flex-row items-center xl:hidden">
         {/* open sidebar button */}
         <label htmlFor="toggle-drawer" className="btn btn-ghost w-8 h-8 p-0">
-          <Bars3Icon className="h-5 w-5" />
+          <Menu className="h-5 w-5" />
         </label>
 
         {/* spacer */}
@@ -68,7 +64,7 @@ export default function Header() {
           title={t('header.buttons.newConv')}
           aria-label={t('header.ariaLabels.newConv')}
         >
-          <PencilSquareIcon className="w-5 h-5" />
+          <SquarePen className="w-5 h-5" />
         </button>
       </section>
 
@@ -127,7 +123,7 @@ export default function Header() {
               onClick={() => navigate('/settings')}
             >
               {/* settings button */}
-              <Cog8ToothIcon className="w-5 h-5" />
+              <Cog className="w-5 h-5" />
             </button>
           </div>
         </section>

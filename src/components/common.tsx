@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronDown } from 'lucide-react';
 import {
   ButtonHTMLAttributes,
   FC,
@@ -243,9 +243,7 @@ export function Dropdown<T extends DropdownOption>({
             aria-haspopup="listbox"
           >
             {currentValue}
-            {!hideChevron && (
-              <ChevronDownIcon className="inline h-5 w-5 ml-1" />
-            )}
+            {!hideChevron && <ChevronDown className="inline h-5 w-5 ml-1" />}
           </summary>
 
           {/* dropdown content */}

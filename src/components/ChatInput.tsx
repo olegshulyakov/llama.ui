@@ -1,9 +1,4 @@
-import {
-  AdjustmentsHorizontalIcon,
-  ArrowUpIcon,
-  PaperClipIcon,
-  StopIcon,
-} from '@heroicons/react/24/solid';
+import { ArrowUp, Paperclip, Settings2, Square } from 'lucide-react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -128,7 +123,7 @@ export function ChatInput({
                 tabIndex={0}
                 role="button"
               >
-                <PaperClipIcon className="h-5 w-5" />
+                <Paperclip className="h-5 w-5" />
               </label>
 
               <button
@@ -137,7 +132,7 @@ export function ChatInput({
                 aria-label={t('header.ariaLabels.settings')}
                 onClick={() => navigate('/settings')}
               >
-                <AdjustmentsHorizontalIcon className="h-5 w-5" />
+                <Settings2 className="h-5 w-5" />
               </button>
             </div>
 
@@ -147,7 +142,7 @@ export function ChatInput({
                   className="btn btn-neutral w-8 h-8 p-0 rounded-full"
                   onClick={onStop}
                 >
-                  <StopIcon className="h-5 w-5" />
+                  <Square className="h-4 w-4" fill="currentColor" />
                 </button>
               )}
 
@@ -157,7 +152,7 @@ export function ChatInput({
                   onClick={sendNewMessage}
                   aria-label={t('chatInput.ariaLabels.send')}
                 >
-                  <ArrowUpIcon className="h-5 w-5" />
+                  <ArrowUp className="h-5 w-5" />
                 </button>
               )}
             </div>

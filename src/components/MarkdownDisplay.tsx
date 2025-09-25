@@ -1,6 +1,6 @@
-import { DocumentDuplicateIcon, PlayIcon } from '@heroicons/react/24/outline';
 import 'katex/dist/katex.min.css';
 import { all as languages } from 'lowlight';
+import { Copy, Play } from 'lucide-react';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Markdown, { ExtraProps } from 'react-markdown';
@@ -130,7 +130,7 @@ const CustomPre: React.ElementType<
               t={t}
               titleKey="chatScreen.titles.run"
               ariaLabelKey="chatScreen.ariaLabels.runCode"
-              icon={PlayIcon}
+              icon={Play}
               onClick={handleRun}
             />
           )}
@@ -139,7 +139,7 @@ const CustomPre: React.ElementType<
             t={t}
             titleKey="chatScreen.titles.copy"
             ariaLabelKey="chatScreen.ariaLabels.copyContent"
-            icon={DocumentDuplicateIcon}
+            icon={Copy}
             onClick={handleCopy}
           />
         </div>
