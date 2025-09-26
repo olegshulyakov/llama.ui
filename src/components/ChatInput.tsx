@@ -6,25 +6,15 @@ import { TbAdjustmentsHorizontal } from 'react-icons/tb';
 import { useNavigate } from 'react-router';
 import { ChatTextareaApi, useChatTextarea } from '../hooks/useChatTextarea';
 import { useFileUpload } from '../hooks/useFileUpload';
+import { usePrefilledMessage } from '../hooks/usePrefilledMessage';
 import { MessageExtra } from '../types';
-import { classNames, cleanCurrentUrl } from '../utils';
+import { classNames } from '../utils';
 import { DropzoneArea } from './DropzoneArea';
 
 /**
  * If the current URL contains "?m=...", prefill the message input with the value.
  * If the current URL contains "?q=...", prefill and SEND the message.
  */
-function getPrefilledContent() {
-  const searchParams = new URL(window.location.href).searchParams;
-  return searchParams.get('m') || searchParams.get('q') || '';
-}
-function isPrefilledSend() {
-  const searchParams = new URL(window.location.href).searchParams;
-  return searchParams.has('q');
-}
-function resetPrefilled() {
-  cleanCurrentUrl(['m', 'q']);
-}
 
 export function ChatInput({
   onSend,
@@ -40,7 +30,8 @@ export function ChatInput({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const textarea: ChatTextareaApi = useChatTextarea(getPrefilledContent());
+  const { prefilledContent, shouldSendPrefilled } = usePrefilledMessage();
+  const textarea: ChatTextareaApi = useChatTextarea(prefilledContent);
   const extraContext = useFileUpload();
 
   const sendNewMessage = async () => {
@@ -63,21 +54,13 @@ export function ChatInput({
   textarea.refOnSubmit.current = sendNewMessage;
 
   useEffect(() => {
-    // set textarea with prefilled value
-    const prefilled = getPrefilledContent();
-    if (prefilled) {
-      textarea.setValue(prefilled);
+    if (shouldSendPrefilled) {
+      sendNewMessage();
+    } else if (prefilledContent) {
+      textarea.focus();
     }
-
-    // send the prefilled message if needed
-    // otherwise, focus on the input
-    if (isPrefilledSend()) sendNewMessage();
-    else textarea.focus();
-
-    // no need to keep track of sendNewMessage
-    resetPrefilled();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.location.href]);
+  }, [shouldSendPrefilled, prefilledContent]);
 
   return (
     <div
