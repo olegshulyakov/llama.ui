@@ -22,6 +22,7 @@ import {
   LuMonitor,
   LuRefreshCw,
   LuRocket,
+  LuServer,
   LuSettings,
   LuSpeech,
   LuVolume2,
@@ -41,11 +42,11 @@ import {
 import { ImportExportComponent } from '../components/settings/ImportExportComponent';
 import { PresetManager } from '../components/settings/PresetManager';
 import { ThemeController } from '../components/settings/ThemeController';
-import TextToSpeech, {
-  getSpeechSynthesisVoiceByName,
-  getSpeechSynthesisVoices,
-  IS_SPEECH_SYNTHESIS_SUPPORTED,
-} from '../components/TextToSpeech';
+import TextToSpeech from '../components/TextToSpeech';
+import {
+  useAvailableVoices,
+  UnifiedVoice,
+} from '../components/useAvailableVoices';
 import { CONFIG_DEFAULT, INFERENCE_PROVIDERS } from '../config';
 import { useAppContext } from '../context/app';
 import { useChatContext } from '../context/chat';
@@ -130,8 +131,21 @@ function toDropdown(
 function getSettingTabsConfiguration(
   config: Configuration,
   models: InferenceApiModel[],
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
+  voices: UnifiedVoice[],
+  refreshVoices: () => void,
+  isLoading: boolean
 ): SettingTab[] {
+  const unifiedVoiceOptions: { value: string; label: string }[] = (
+    voices || []
+  ).map((voice: UnifiedVoice) => ({
+    value: voice.id,
+    label: voice.label,
+  }));
+
+  const selectedVoice: UnifiedVoice | null =
+    voices.find((v: UnifiedVoice) => v.id === config.ttsVoice) ?? null;
+
   return [
     /* General */
     {
@@ -217,67 +231,67 @@ function getSettingTabsConfiguration(
         </>
       ),
       fields: [
-        /* Text to Speech */
         toSection(
           t('settings.sections.textToSpeech'),
           <LuSpeech className={ICON_CLASSNAME} />
         ),
-        toDropdown(
-          'ttsVoice',
-          !IS_SPEECH_SYNTHESIS_SUPPORTED
-            ? []
-            : getSpeechSynthesisVoices().map((voice) => ({
-                value: `${voice.name} (${voice.lang})`,
-                label: `${voice.name} (${voice.lang})`,
-              })),
-          true
+        toSection(
+          t('settings.sections.ttsServer'),
+          <LuServer className={ICON_CLASSNAME} />
         ),
-        toInput(
-          SettingInputType.RANGE_INPUT,
-          'ttsPitch',
-          !IS_SPEECH_SYNTHESIS_SUPPORTED,
-          {
-            min: 0,
-            max: 2,
-            step: 0.5,
-          }
-        ),
-        toInput(
-          SettingInputType.RANGE_INPUT,
-          'ttsRate',
-          !IS_SPEECH_SYNTHESIS_SUPPORTED,
-          {
-            min: 0.5,
-            max: 2,
-            step: 0.5,
-          }
-        ),
-        toInput(
-          SettingInputType.RANGE_INPUT,
-          'ttsVolume',
-          !IS_SPEECH_SYNTHESIS_SUPPORTED,
-          {
-            min: 0,
-            max: 1,
-            step: 0.25,
-          }
-        ),
+        toInput(SettingInputType.SHORT_INPUT, 'ttsServerIp'),
+        toInput(SettingInputType.SHORT_INPUT, 'ttsServerPort'),
+        {
+          type: SettingInputType.CUSTOM,
+          key: 'custom',
+          component: () => (
+            <button
+              className="btn mt-2 mb-4"
+              onClick={refreshVoices}
+              disabled={isLoading}
+            >
+              <LuRefreshCw
+                className={`${ICON_CLASSNAME} ${isLoading ? 'animate-spin' : ''}`}
+              />
+              <Trans i18nKey="settings.actionButtons.refreshVoices" />
+            </button>
+          ),
+        },
+        toDropdown('ttsVoice', unifiedVoiceOptions, true),
+        toInput(SettingInputType.RANGE_INPUT, 'ttsPitch', false, {
+          min: 0,
+          max: 2,
+          step: 0.5,
+        }),
+        toInput(SettingInputType.RANGE_INPUT, 'ttsRate', false, {
+          min: 0.5,
+          max: 2,
+          step: 0.5,
+        }),
+        toInput(SettingInputType.RANGE_INPUT, 'ttsVolume', false, {
+          min: 0,
+          max: 1,
+          step: 0.25,
+        }),
         {
           type: SettingInputType.CUSTOM,
           key: 'custom', // dummy key, won't be used
           component: () => (
             <TextToSpeech
               text={t('settings.textToSpeech.check.text')}
-              voice={getSpeechSynthesisVoiceByName(config.ttsVoice)}
+              selectedVoice={selectedVoice}
               pitch={config.ttsPitch}
               rate={config.ttsRate}
               volume={config.ttsVolume}
+              serverConfig={{
+                serverIp: config.ttsServerIp,
+                serverPort: config.ttsServerPort,
+              }}
             >
               {({ isPlaying, play, stop }) => (
                 <button
                   className="btn"
                   onClick={() => (!isPlaying ? play() : stop())}
-                  disabled={!IS_SPEECH_SYNTHESIS_SUPPORTED}
                   title="Play test message"
                   aria-label="Play test message"
                 >
@@ -489,9 +503,22 @@ export default function Settings() {
   const [localModels, setLocalModels] = useState<InferenceApiModel[]>(
     Object.assign([], models)
   );
+  const [lang] = useState(i18n.language);
+  const { voices, refreshVoices, isLoading } = useAvailableVoices(
+    localConfig.ttsServerIp,
+    localConfig.ttsServerPort
+  );
   const settingTabs = useMemo<SettingTab[]>(
-    () => getSettingTabsConfiguration(localConfig, localModels, t),
-    [t, localConfig, localModels]
+    () =>
+      getSettingTabsConfiguration(
+        localConfig,
+        localModels,
+        t,
+        voices,
+        refreshVoices,
+        isLoading
+      ),
+    [t, localConfig, localModels, voices, refreshVoices, isLoading]
   );
   const currConv = useMemo(() => viewingChat?.conv ?? null, [viewingChat]);
 
@@ -732,6 +759,15 @@ export default function Settings() {
         return null;
     }
   };
+  useEffect(() => {
+    fetchModels(localConfig);
+  }, [config.provider, fetchModels, localConfig]);
+
+  useEffect(() => {
+    if (lang !== i18n.language) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
 
   return (
     <div className="flex flex-col h-full py-4">

@@ -26,6 +26,10 @@ export interface Configuration {
   showRawUserMessage: boolean;
   showRawAssistantMessage: boolean;
 
+  /* text to speech */
+  ttsServerIp: string;
+  ttsServerPort: string;
+
   /* conversations */
   pasteLongTextToFileLen: number;
   pdfAsImage: boolean;

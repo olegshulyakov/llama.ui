@@ -8,6 +8,8 @@
   "showRawUserMessage": false,
   "showRawAssistantMessage": false,
   "pasteLongTextToFileLen": 10000,
+  "ttsServerIp": "localhost",
+  "ttsServerPort": "8888",
   "pdfAsImage": false,
   "showTokensPerSecond": false,
   "showThoughtInProgress": false,

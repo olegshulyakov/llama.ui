@@ -1,63 +1,24 @@
+// TextToSpeech.tsx
+
 import {
   forwardRef,
   Fragment,
   ReactNode,
   useCallback,
-  useEffect,
+  // useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-
-// Define language popularity order (you can customize this)
-const popularLanguages = [
-  'en',
-  'zh',
-  'hi',
-  'es',
-  'fr',
-  'ru',
-  'pt',
-  'de',
-  'ja',
-  'ko',
-  'it',
-  'ar',
-];
-
-export const IS_SPEECH_SYNTHESIS_SUPPORTED = !!window.speechSynthesis;
-export const getSpeechSynthesisVoices = () =>
-  speechSynthesis
-    ?.getVoices()
-    .filter((voice) => voice.localService)
-    .sort((a, b) => {
-      // Default voice first
-      if (a.default !== b.default) return a.default ? -1 : 1;
-
-      // Popular languages on top
-      const aRank = popularLanguages.indexOf(a.lang.substring(0, 2));
-      const bRank = popularLanguages.indexOf(b.lang.substring(0, 2));
-      if (aRank !== bRank) {
-        const aEffectiveRank = aRank === -1 ? Infinity : aRank;
-        const bEffectiveRank = bRank === -1 ? Infinity : bRank;
-        return aEffectiveRank - bEffectiveRank;
-      }
-
-      // Sort by language and name (alphabetically)
-      return a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
-    }) || [];
-export function getSpeechSynthesisVoiceByName(name: string) {
-  return getSpeechSynthesisVoices().find(
-    (voice) => `${voice.name} (${voice.lang})` === name
-  );
-}
+import { UnifiedVoice } from './useAvailableVoices';
 
 interface TextToSpeechProps {
   text: string;
-  voice?: SpeechSynthesisVoice;
+  selectedVoice: UnifiedVoice | null;
   pitch?: number;
   rate?: number;
   volume?: number;
+  serverConfig?: TTSServerConfig;
 }
 
 interface TextToSpeechState {
@@ -66,117 +27,119 @@ interface TextToSpeechState {
   stop: () => void;
 }
 
+interface TTSServerConfig {
+  serverIp: string;
+  serverPort: string;
+}
+
 const useTextToSpeech = ({
   text,
-  voice = getSpeechSynthesisVoices()[0],
+  selectedVoice,
   pitch = 1,
   rate = 1,
   volume = 1,
-}: TextToSpeechProps) => {
+  serverConfig,
+}: TextToSpeechProps & {
+  serverConfig?: TTSServerConfig;
+}): TextToSpeechState => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    if (!IS_SPEECH_SYNTHESIS_SUPPORTED) {
-      console.warn('Speech synthesis not supported');
-      return;
-    }
-    if (!text) {
-      console.warn('No text provided');
-      return;
-    }
+  const play = useCallback(async () => {
+    if (!selectedVoice) return;
 
-    // Clean up previous utterance
-    if (utteranceRef.current) {
-      utteranceRef.current.onstart = null;
-      utteranceRef.current.onend = null;
-      utteranceRef.current.onerror = null;
-    }
-
-    const utterance = new window.SpeechSynthesisUtterance(text);
-
-    utterance.voice = voice;
-    utterance.pitch = pitch;
-    utterance.rate = rate;
-    utterance.volume = volume;
-
-    // Event handlers
-    utterance.onstart = () => {
-      setIsPlaying(true);
-    };
-
-    utterance.onend = () => {
-      setIsPlaying(false);
-    };
-
-    utterance.onerror = (event) => {
-      console.error('Speech synthesis error: ', event.error);
-      setIsPlaying(false);
-    };
-
-    utteranceRef.current = utterance;
-
-    return () => {
-      speechSynthesis.cancel();
-      if (utteranceRef.current === utterance) {
-        utteranceRef.current.onstart = null;
-        utteranceRef.current.onend = null;
-        utteranceRef.current.onerror = null;
-        utteranceRef.current = null;
+    if (selectedVoice.type === 'kokoro') {
+      if (!serverConfig?.serverIp || !serverConfig?.serverPort) {
+        console.error('TTS server configuration is missing');
+        return;
       }
-    };
-  }, [pitch, rate, text, voice, volume]);
 
-  const play = useCallback(() => {
-    if (!IS_SPEECH_SYNTHESIS_SUPPORTED) {
-      console.warn('Speech synthesis not supported');
-      return;
-    }
-    speechSynthesis.cancel();
-
-    if (utteranceRef.current) {
       try {
-        speechSynthesis.speak(utteranceRef.current);
-      } catch (error) {
-        console.error('Speech synthesis error:', error);
-        setIsPlaying(false);
+        const response = await fetch(
+          `http://${serverConfig.serverIp}:${serverConfig.serverPort}/v1/audio/speech`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'kokoro',
+              input: text,
+              voice: selectedVoice.raw, // ✅ string
+              response_format: 'mp3',
+              speed: rate,
+            }),
+          }
+        );
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        const audio = new Audio(url);
+        audio.volume = volume;
+        audioRef.current = audio;
+
+        audio.onplay = () => setIsPlaying(true);
+        audio.onended = () => {
+          setIsPlaying(false);
+          URL.revokeObjectURL(url);
+        };
+        await audio.play();
+      } catch (err) {
+        console.error('Kokoro TTS failed:', err);
       }
+    } else if (selectedVoice.type === 'browser') {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = selectedVoice.raw; // ✅ SpeechSynthesisVoice
+      utterance.pitch = pitch;
+      utterance.rate = rate;
+      utterance.volume = volume;
+
+      utterance.onstart = () => setIsPlaying(true);
+      utterance.onend = () => setIsPlaying(false);
+      utterance.onerror = () => setIsPlaying(false);
+
+      speechSynthesis.speak(utterance);
     }
-  }, []);
+  }, [
+    text,
+    selectedVoice,
+    pitch,
+    rate,
+    volume,
+    serverConfig?.serverIp,
+    serverConfig?.serverPort,
+  ]);
 
   const stop = useCallback(() => {
-    speechSynthesis.cancel();
     setIsPlaying(false);
-  }, []);
 
-  return {
-    isPlaying,
-    play,
-    stop,
-  };
+    // Stop browser speech synthesis if active
+    if (selectedVoice?.type === 'browser') {
+      speechSynthesis.cancel();
+    }
+
+    // Stop and cleanup Kokoro audio if active
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.src = '';
+      audioRef.current = null;
+    }
+  }, [selectedVoice?.type]);
+
+  return { isPlaying, play, stop };
 };
 
 const TextToSpeech = forwardRef<
   TextToSpeechState,
   TextToSpeechProps & { children: (props: TextToSpeechState) => ReactNode }
->(({ children, text, voice, pitch, rate, volume }, ref) => {
-  const { isPlaying, play, stop } = useTextToSpeech({
-    text,
-    voice,
-    pitch,
-    rate,
-    volume,
-  });
+>(({ children, ...props }, ref) => {
+  const { isPlaying, play, stop } = useTextToSpeech(props);
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      isPlaying,
-      play,
-      stop,
-    }),
-    [isPlaying, play, stop]
-  );
+  useImperativeHandle(ref, () => ({ isPlaying, play, stop }), [
+    isPlaying,
+    play,
+    stop,
+  ]);
 
   return <Fragment>{children({ isPlaying, play, stop })}</Fragment>;
 });

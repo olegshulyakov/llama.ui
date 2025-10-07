@@ -36,10 +36,12 @@ import ChatInputExtraContextItem from './ChatInputExtraContextItem';
 import { IntlIconButton } from './common';
 import { DropzoneArea } from './DropzoneArea';
 import MarkdownDisplay from './MarkdownDisplay';
-import TextToSpeech, {
-  getSpeechSynthesisVoiceByName,
-  IS_SPEECH_SYNTHESIS_SUPPORTED,
-} from './TextToSpeech';
+import TextToSpeech from '../components/TextToSpeech';
+import {
+  UnifiedVoice,
+  useAvailableVoices,
+} from '../components/useAvailableVoices';
+const IS_SPEECH_SYNTHESIS_SUPPORTED = 'speechSynthesis' in window;
 
 interface SplitMessage {
   content: PendingMessage['content'];
@@ -356,7 +358,6 @@ export default memo(function ChatMessage({
           {/* play message */}
           <PlayButton
             className="btn btn-ghost w-8 h-8 p-0"
-            disabled={!IS_SPEECH_SYNTHESIS_SUPPORTED || !content}
             text={content ?? ''}
           />
 
@@ -538,25 +539,49 @@ const ThinkingSection = memo(function ThinkingSection({
 
 interface PlayButtonProps {
   className?: string;
-  disabled?: boolean;
   text: string;
 }
 const PlayButton = memo(function PlayButton({
   className,
-  disabled,
   text,
 }: PlayButtonProps) {
   const { t } = useTranslation();
   const {
-    config: { ttsVoice, ttsPitch, ttsRate, ttsVolume },
+    config: {
+      ttsVoice,
+      ttsPitch,
+      ttsRate,
+      ttsVolume,
+      ttsServerIp,
+      ttsServerPort,
+    },
   } = useAppContext();
+  const { voices } = useAvailableVoices(ttsServerIp, ttsServerPort);
+  const selectedVoice = useMemo(
+    () => voices.find((v: UnifiedVoice) => v.id === ttsVoice) || null,
+    [voices, ttsVoice]
+  );
+
+  const isDisabled = useMemo(() => {
+    if (!text) return true;
+    if (selectedVoice?.type === 'kokoro') {
+      return !ttsServerIp || !ttsServerPort;
+    }
+    return !IS_SPEECH_SYNTHESIS_SUPPORTED;
+  }, [text, selectedVoice?.type, ttsServerIp, ttsServerPort]);
+
   return (
     <TextToSpeech
       text={text}
-      voice={getSpeechSynthesisVoiceByName(ttsVoice)}
+      selectedVoice={selectedVoice}
       pitch={ttsPitch}
       rate={ttsRate}
       volume={ttsVolume}
+      serverConfig={
+        ttsServerIp && ttsServerPort
+          ? { serverIp: ttsServerIp, serverPort: ttsServerPort }
+          : undefined
+      }
     >
       {({ isPlaying, play, stop }) => (
         <Fragment>
@@ -564,7 +589,7 @@ const PlayButton = memo(function PlayButton({
             <IntlIconButton
               className={className}
               onClick={play}
-              disabled={disabled}
+              disabled={isDisabled}
               t={t}
               titleKey="chatScreen.titles.play"
               ariaLabelKey="chatScreen.ariaLabels.playMessage"
@@ -575,7 +600,7 @@ const PlayButton = memo(function PlayButton({
             <IntlIconButton
               className={className}
               onClick={stop}
-              disabled={disabled}
+              disabled={isDisabled}
               t={t}
               titleKey="chatScreen.titles.stop"
               ariaLabelKey="chatScreen.ariaLabels.stopMessage"

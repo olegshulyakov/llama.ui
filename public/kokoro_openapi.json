@@ -1,0 +1,838 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Kokoro TTS API",
+    "description": "API for text-to-speech generation using Kokoro",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/audio/speech": {
+      "post": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "Create Speech",
+        "description": "OpenAI-compatible endpoint for text-to-speech",
+        "operationId": "create_speech_v1_audio_speech_post",
+        "parameters": [
+          {
+            "name": "x-raw-response",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "X-Raw-Response"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenAISpeechRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/download/{filename}": {
+      "get": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "Download Audio File",
+        "description": "Download a generated audio file from temp storage",
+        "operationId": "download_audio_file_v1_download__filename__get",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "List Models",
+        "description": "List all available models",
+        "operationId": "list_models_v1_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/v1/models/{model}": {
+      "get": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "Retrieve Model",
+        "description": "Retrieve a specific model",
+        "operationId": "retrieve_model_v1_models__model__get",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/audio/voices": {
+      "get": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "List Voices",
+        "description": "List all available voices for text-to-speech",
+        "operationId": "list_voices_v1_audio_voices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/v1/audio/voices/combine": {
+      "post": {
+        "tags": ["OpenAI Compatible TTS"],
+        "summary": "Combine Voices",
+        "description": "Combine multiple voices into a new voice and return the .pt file.\n\nArgs:\n    request: Either a string with voices separated by + (e.g. \"voice1+voice2\")\n            or a list of voice names to combine\n\nReturns:\n    FileResponse with the combined voice .pt file\n\nRaises:\n    HTTPException:\n        - 400: Invalid request (wrong number of voices, voice not found)\n        - 500: Server error (file system issues, combination failed)",
+        "operationId": "combine_voices_v1_audio_voices_combine_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "title": "Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dev/phonemize": {
+      "post": {
+        "tags": ["text processing"],
+        "summary": "Phonemize Text",
+        "description": "Convert text to phonemes using Kokoro's quiet mode.\n\nArgs:\n    request: Request containing text and language\n\nReturns:\n    Phonemes and token IDs",
+        "operationId": "phonemize_text_dev_phonemize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhonemeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhonemeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dev/generate_from_phonemes": {
+      "post": {
+        "tags": ["text processing"],
+        "summary": "Generate From Phonemes",
+        "description": "Generate audio directly from phonemes using Kokoro's phoneme format",
+        "operationId": "generate_from_phonemes_dev_generate_from_phonemes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateFromPhonemesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dev/captioned_speech": {
+      "post": {
+        "tags": ["text processing"],
+        "summary": "Create Captioned Speech",
+        "description": "Generate audio with word-level timestamps using streaming approach",
+        "operationId": "create_captioned_speech_dev_captioned_speech_post",
+        "parameters": [
+          {
+            "name": "x-raw-response",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "X-Raw-Response"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptionedSpeechRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/threads": {
+      "get": {
+        "tags": ["debug"],
+        "summary": "Get Thread Info",
+        "operationId": "get_thread_info_debug_threads_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/storage": {
+      "get": {
+        "tags": ["debug"],
+        "summary": "Get Storage Info",
+        "operationId": "get_storage_info_debug_storage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/system": {
+      "get": {
+        "tags": ["debug"],
+        "summary": "Get System Info",
+        "operationId": "get_system_info_debug_system_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/session_pools": {
+      "get": {
+        "tags": ["debug"],
+        "summary": "Get Session Pool Info",
+        "description": "Get information about ONNX session pools.",
+        "operationId": "get_session_pool_info_debug_session_pools_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/web/{filename}": {
+      "get": {
+        "tags": ["Web Player"],
+        "summary": "Serve Web File",
+        "description": "Serve web player static files asynchronously.",
+        "operationId": "serve_web_file_web__filename__get",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check endpoint",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/test": {
+      "get": {
+        "summary": "Test Endpoint",
+        "description": "Test endpoint to verify routing",
+        "operationId": "test_endpoint_v1_test_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CaptionedSpeechRequest": {
+        "properties": {
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "The model to use for generation. Supported models: tts-1, tts-1-hd, kokoro",
+            "default": "kokoro"
+          },
+          "input": {
+            "type": "string",
+            "title": "Input",
+            "description": "The text to generate audio for"
+          },
+          "voice": {
+            "type": "string",
+            "title": "Voice",
+            "description": "The voice to use for generation. Can be a base voice or a combined voice name.",
+            "default": "af_heart"
+          },
+          "response_format": {
+            "type": "string",
+            "enum": ["mp3", "opus", "aac", "flac", "wav", "pcm"],
+            "title": "Response Format",
+            "description": "The format to return audio in. Supported formats: mp3, opus, flac, wav, pcm. PCM format returns raw 16-bit samples without headers. AAC is not currently supported.",
+            "default": "mp3"
+          },
+          "speed": {
+            "type": "number",
+            "maximum": 4,
+            "minimum": 0.25,
+            "title": "Speed",
+            "description": "The speed of the generated audio. Select a value from 0.25 to 4.0.",
+            "default": 1
+          },
+          "stream": {
+            "type": "boolean",
+            "title": "Stream",
+            "description": "If true (default), audio will be streamed as it's generated. Each chunk will be a complete sentence.",
+            "default": true
+          },
+          "return_timestamps": {
+            "type": "boolean",
+            "title": "Return Timestamps",
+            "description": "If true (default), returns word-level timestamps in the response",
+            "default": true
+          },
+          "return_download_link": {
+            "type": "boolean",
+            "title": "Return Download Link",
+            "description": "If true, returns a download link in X-Download-Path header after streaming completes",
+            "default": false
+          },
+          "lang_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lang Code",
+            "description": "Optional language code to use for text processing. If not provided, will use first letter of voice name."
+          },
+          "normalization_options": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NormalizationOptions"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Options for the normalization system",
+            "default": {
+              "normalize": true,
+              "unit_normalization": false,
+              "url_normalization": true,
+              "email_normalization": true,
+              "optional_pluralization_normalization": true,
+              "phone_normalization": true
+            }
+          }
+        },
+        "type": "object",
+        "required": ["input"],
+        "title": "CaptionedSpeechRequest",
+        "description": "Request schema for captioned speech endpoint"
+      },
+      "GenerateFromPhonemesRequest": {
+        "properties": {
+          "phonemes": {
+            "type": "string",
+            "title": "Phonemes",
+            "description": "Phoneme string to synthesize"
+          },
+          "voice": {
+            "type": "string",
+            "title": "Voice",
+            "description": "Voice ID to use for generation"
+          }
+        },
+        "type": "object",
+        "required": ["phonemes", "voice"],
+        "title": "GenerateFromPhonemesRequest",
+        "description": "Simple request for phoneme-to-speech generation"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "NormalizationOptions": {
+        "properties": {
+          "normalize": {
+            "type": "boolean",
+            "title": "Normalize",
+            "description": "Normalizes input text to make it easier for the model to say",
+            "default": true
+          },
+          "unit_normalization": {
+            "type": "boolean",
+            "title": "Unit Normalization",
+            "description": "Transforms units like 10KB to 10 kilobytes",
+            "default": false
+          },
+          "url_normalization": {
+            "type": "boolean",
+            "title": "Url Normalization",
+            "description": "Changes urls so they can be properly pronounced by kokoro",
+            "default": true
+          },
+          "email_normalization": {
+            "type": "boolean",
+            "title": "Email Normalization",
+            "description": "Changes emails so they can be properly pronouced by kokoro",
+            "default": true
+          },
+          "optional_pluralization_normalization": {
+            "type": "boolean",
+            "title": "Optional Pluralization Normalization",
+            "description": "Replaces (s) with s so some words get pronounced correctly",
+            "default": true
+          },
+          "phone_normalization": {
+            "type": "boolean",
+            "title": "Phone Normalization",
+            "description": "Changes phone numbers so they can be properly pronouced by kokoro",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "NormalizationOptions",
+        "description": "Options for the normalization system"
+      },
+      "OpenAISpeechRequest": {
+        "properties": {
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "The model to use for generation. Supported models: tts-1, tts-1-hd, kokoro",
+            "default": "kokoro"
+          },
+          "input": {
+            "type": "string",
+            "title": "Input",
+            "description": "The text to generate audio for"
+          },
+          "voice": {
+            "type": "string",
+            "title": "Voice",
+            "description": "The voice to use for generation. Can be a base voice or a combined voice name.",
+            "default": "af_heart"
+          },
+          "response_format": {
+            "type": "string",
+            "enum": ["mp3", "opus", "aac", "flac", "wav", "pcm"],
+            "title": "Response Format",
+            "description": "The format to return audio in. Supported formats: mp3, opus, flac, wav, pcm. PCM format returns raw 16-bit samples without headers. AAC is not currently supported.",
+            "default": "mp3"
+          },
+          "download_format": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["mp3", "opus", "aac", "flac", "wav", "pcm"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Format",
+            "description": "Optional different format for the final download. If not provided, uses response_format."
+          },
+          "speed": {
+            "type": "number",
+            "maximum": 4,
+            "minimum": 0.25,
+            "title": "Speed",
+            "description": "The speed of the generated audio. Select a value from 0.25 to 4.0.",
+            "default": 1
+          },
+          "stream": {
+            "type": "boolean",
+            "title": "Stream",
+            "description": "If true (default), audio will be streamed as it's generated. Each chunk will be a complete sentence.",
+            "default": true
+          },
+          "return_download_link": {
+            "type": "boolean",
+            "title": "Return Download Link",
+            "description": "If true, returns a download link in X-Download-Path header after streaming completes",
+            "default": false
+          },
+          "lang_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lang Code",
+            "description": "Optional language code to use for text processing. If not provided, will use first letter of voice name."
+          },
+          "normalization_options": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NormalizationOptions"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Options for the normalization system",
+            "default": {
+              "normalize": true,
+              "unit_normalization": false,
+              "url_normalization": true,
+              "email_normalization": true,
+              "optional_pluralization_normalization": true,
+              "phone_normalization": true
+            }
+          }
+        },
+        "type": "object",
+        "required": ["input"],
+        "title": "OpenAISpeechRequest",
+        "description": "Request schema for OpenAI-compatible speech endpoint"
+      },
+      "PhonemeRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "a"
+          }
+        },
+        "type": "object",
+        "required": ["text"],
+        "title": "PhonemeRequest"
+      },
+      "PhonemeResponse": {
+        "properties": {
+          "phonemes": {
+            "type": "string",
+            "title": "Phonemes"
+          },
+          "tokens": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Tokens"
+          }
+        },
+        "type": "object",
+        "required": ["phonemes", "tokens"],
+        "title": "PhonemeResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
