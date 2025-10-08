@@ -1,5 +1,7 @@
 @use 'tailwindcss';
 
+@import '@radix-ui/themes/styles.css';
+
 @plugin 'daisyui' {
   themes: all;
 }
