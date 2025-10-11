@@ -2,7 +2,7 @@
   "private": true,
   "name": "llama.ui",
   "description": "A minimal Interface for AI Companion that runs entirely in your browser.",
-  "version": "2.36.0",
+  "version": "2.37.0",
   "homepage": "https://llama-ui.js.org/",
   "license": "MIT",
   "type": "module",
@@ -17,6 +17,9 @@
     "preview": "npm run build && vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-collapsible": "^1.1.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dexie": "^4.0.11",
     "highlight.js": "^11.10.0",
     "i18next": "^25.5.2",
@@ -35,12 +38,14 @@
     "rehype-katex": "^7.0.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.0",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
+    "@types/dom-speech-recognition": "^0.0.6",
     "@types/node": "^22.13.1",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",

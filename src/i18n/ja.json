@@ -163,14 +163,15 @@
       "output": {
         "loading": "Pyodideを読み込み中...",
         "running": "実行中..."
-      },
-      "buttons": {
-        "run": "実行",
-        "stop": "停止"
-      },
-      "links": {
-        "reportBug": "バグを報告"
       }
+    },
+    "buttons": {
+      "close": "閉じる",
+      "run": "実行",
+      "stop": "停止"
+    },
+    "links": {
+      "reportBug": "バグを報告"
     }
   },
   "settings": {

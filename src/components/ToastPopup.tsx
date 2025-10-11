@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import toast, { Toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { Button } from './Button';
 
 /**
  * A toast popup component that displays confirmation messages with action buttons.
@@ -32,14 +33,22 @@ import toast, { Toast } from 'react-hot-toast';
  * ```
  */
 export const ToastPopup: FC<{
-  t: Toast;
+  toastId: string;
   title: string;
   description: string;
   note?: string;
   submitBtn: string;
   cancelBtn: string;
   onSubmit: () => Promise<void> | void;
-}> = ({ t, title, description, note, submitBtn, cancelBtn, onSubmit }) => (
+}> = ({
+  toastId,
+  title,
+  description,
+  note,
+  submitBtn,
+  cancelBtn,
+  onSubmit,
+}) => (
   <div className="flex flex-col gap-2">
     <p className="font-medium">{title}</p>
     <p className="text-sm">{description}</p>
@@ -49,21 +58,23 @@ export const ToastPopup: FC<{
       </p>
     )}
     <div className="flex justify-center gap-2 mt-1">
-      <button
+      <Button
         onClick={() => {
-          toast.dismiss(t.id);
+          toast.dismiss(toastId);
           onSubmit();
         }}
-        className="btn btn-neutral btn-sm"
+        variant="neutral"
+        size="small"
       >
         {submitBtn}
-      </button>
-      <button
-        onClick={() => toast.dismiss(t.id)}
-        className="btn btn-ghost btn-sm"
+      </Button>
+      <Button
+        onClick={() => toast.dismiss(toastId)}
+        variant="ghost"
+        size="small"
       >
         {cancelBtn}
-      </button>
+      </Button>
     </div>
   </div>
 );

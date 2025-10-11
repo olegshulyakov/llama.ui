@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuPlay, LuSquare } from 'react-icons/lu';
-import { useChatContext } from '../context/chat';
-import LocalStorage from '../database/localStorage';
-import { CanvasType } from '../types';
-import { OpenInNewTab, XCloseButton } from './common';
+import { Button, Icon, Textarea } from '../../../components';
+import LocalStorage from '../../../database/localStorage';
+import { useChatContext } from '../../../store/chat';
+import { CanvasType } from '../../../types';
+import { OpenInNewTab } from './OpenInNewTab';
 
 const canInterrupt = typeof SharedArrayBuffer === 'function';
 
@@ -146,53 +146,62 @@ export default function CanvasPyInterpreter() {
   }
 
   return (
-    <div className="card bg-base-200 w-full h-full shadow-xl">
+    <div className="card bg-base-300 w-full h-full shadow-xl">
       <div className="card-body">
         <div className="flex justify-between items-center mb-4">
           <span className="text-lg font-bold">
             {t('codeRunner.canvasPyInterpreter.title')}
           </span>
-          <XCloseButton
-            className="bg-base-100"
+          <Button
+            variant="ghost"
+            size="icon"
+            title={t('codeRunner.buttons.close')}
             onClick={() => setCanvasData(null)}
-          />
+          >
+            <Icon icon="LuX" size="md" />
+          </Button>
         </div>
         <div className="grid grid-rows-3 gap-4 h-full">
-          <textarea
-            className="textarea textarea-bordered w-full h-full font-mono"
+          <Textarea
+            className="h-full font-mono"
+            size="full"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-          ></textarea>
-          <div className="font-mono flex flex-col row-span-2">
+          />
+          <div className="flex flex-col row-span-2">
             <div className="flex items-center mb-2">
-              <button
-                className="btn btn-sm bg-base-100"
+              <Button
+                size="small"
+                title={t('codeRunner.buttons.run')}
                 onClick={() => runCode(code)}
                 disabled={running}
               >
-                <LuPlay className="lucide h-6 w-6" />{' '}
-                {t('codeRunner.canvasPyInterpreter.buttons.run')}
-              </button>
+                <Icon icon="LuPlay" variant="leftside" size="md" />
+                {t('codeRunner.buttons.run')}
+              </Button>
               {showStopBtn && (
-                <button
-                  className="btn btn-sm bg-base-100 ml-2"
+                <Button
+                  size="small"
+                  className="bg-base-100 ml-2"
+                  title={t('codeRunner.buttons.stop')}
                   onClick={() => interruptFn?.()}
                 >
-                  <LuSquare className="lucide h-6 w-6" />{' '}
-                  {t('codeRunner.canvasPyInterpreter.buttons.stop')}
-                </button>
+                  <Icon icon="LuSquare" variant="leftside" size="md" />
+                  {t('codeRunner.buttons.stop')}
+                </Button>
               )}
               <span className="grow text-right text-xs">
                 <OpenInNewTab href="https://github.com/ggerganov/llama.cpp/issues/11762">
-                  {t('codeRunner.canvasPyInterpreter.links.reportBug')}
+                  {t('codeRunner.links.reportBug')}
                 </OpenInNewTab>
               </span>
             </div>
-            <textarea
-              className="textarea textarea-bordered h-full dark-color"
+            <Textarea
+              className="h-full font-mono dark-color"
+              size="full"
               value={output}
               readOnly
-            ></textarea>
+            />
           </div>
         </div>
       </div>

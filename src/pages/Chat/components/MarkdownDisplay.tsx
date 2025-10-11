@@ -2,18 +2,17 @@ import 'katex/dist/katex.min.css';
 import { all as languages } from 'lowlight';
 import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuCopy, LuPlay } from 'react-icons/lu';
 import Markdown, { ExtraProps } from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import { useAppContext } from '../context/app';
-import { useChatContext } from '../context/chat';
-import { CanvasType } from '../types';
-import { copyStr } from '../utils';
-import { IntlIconButton } from './common';
+import { Button, Icon } from '../../../components';
+import { useAppContext } from '../../../store/app';
+import { useChatContext } from '../../../store/chat';
+import { CanvasType } from '../../../types';
+import { copyStr } from '../../../utils';
 import MermaidChart from './MermaidChart';
 
 export default memo(function MarkdownDisplay({ content }: { content: string }) {
@@ -130,23 +129,25 @@ function CodeBlockToolbar({
   return (
     <div className="hljs sticky h-0 z-[1] text-right p-0">
       {canRunCode && (
-        <IntlIconButton
-          className="btn btn-ghost w-8 h-8 p-0"
-          t={t}
-          titleKey="chatScreen.titles.run"
-          ariaLabelKey="chatScreen.ariaLabels.runCode"
-          icon={LuPlay}
+        <Button
+          variant="ghost"
+          size="icon"
+          title={t('chatScreen.titles.run')}
+          aria-label={t('chatScreen.ariaLabels.runCode')}
           onClick={handleRun}
-        />
+        >
+          <Icon icon="LuPlay" size="sm" />
+        </Button>
       )}
-      <IntlIconButton
-        className="btn btn-ghost w-8 h-8 p-0"
-        t={t}
-        titleKey="chatScreen.titles.copy"
-        ariaLabelKey="chatScreen.ariaLabels.copyContent"
-        icon={LuCopy}
+      <Button
+        variant="ghost"
+        size="icon"
+        title={t('chatScreen.titles.copy')}
+        aria-label={t('chatScreen.ariaLabels.copyContent')}
         onClick={handleCopy}
-      />
+      >
+        <Icon icon="LuCopy" size="sm" />
+      </Button>
     </div>
   );
 }

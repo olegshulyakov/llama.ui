@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 import loadVersion from 'vite-plugin-package-version';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const vendors = ['highlight', 'katex', 'pdfjs', 'radix-ui', 'react-icons'];
+
 export default defineConfig({
   plugins: [
     react(),
@@ -120,16 +122,29 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        entryFileNames: `assets/[name]-[hash].js`,
-        chunkFileNames: `assets/[name].js`,
+        entryFileNames: 'js/[name]-[hash].js',
+        chunkFileNames: 'js/[name]-[hash].js',
         assetFileNames: function (file) {
-          return file.names.some((name) => name.includes('css'))
-            ? `assets/[name]-[hash].[ext]`
-            : `assets/[name].[ext]`;
+          if (file.names.some((name) => name.includes('css'))) {
+            return 'css/[name]-[hash].[ext]';
+          }
+          if (
+            file.names.some(
+              (name) =>
+                name.includes('woff') ||
+                name.includes('woff2') ||
+                name.includes('ttf')
+            )
+          ) {
+            return 'fonts/[name].[ext]';
+          }
+          return 'assets/[name].[ext]';
         },
-        manualChunks: {
-          katex: ['katex'],
-          'pdfjs-dist': ['pdfjs-dist'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            const name = id.split('node_modules/')[1].split('/')[0];
+            return vendors.find((vendor) => name.includes(vendor)) || 'vendor';
+          }
         },
       },
     },

@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { LuEye, LuMessageCircleMore } from 'react-icons/lu';
 import { TbDatabaseExport, TbDatabaseImport } from 'react-icons/tb';
 import { DelimeterComponent, SettingsSectionLabel } from '.';
-import { useAppContext } from '../../context/app';
-import { normalizeUrl } from '../../utils';
-import { downloadAsFile } from '../common';
+import { Button, Icon, Label } from '../../../components';
+import { useAppContext } from '../../../store/app';
+import { normalizeUrl } from '../../../utils';
+import { downloadAsFile } from '../../../utils/downloadAsFile';
 
 export function ImportExportComponent({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
@@ -37,15 +37,15 @@ export function ImportExportComponent({ onClose }: { onClose: () => void }) {
   return (
     <>
       <SettingsSectionLabel>
-        <LuMessageCircleMore className="lucide w-4 h-4 mr-1 inline" />
+        <Icon icon="LuMessageCircleMore" size="sm" variant="leftside" />
         {t('settings.importExport.chatsSectionTitle')}
       </SettingsSectionLabel>
 
       <div className="grid grid-cols-[repeat(2,max-content)] gap-2">
-        <button className="btn" onClick={onExport}>
+        <Button onClick={onExport}>
           <TbDatabaseExport className="lucide w-4 h-4 mr-1 inline" />
           {t('settings.importExport.exportBtnLabel')}
-        </button>
+        </Button>
 
         <input
           id="file-import"
@@ -54,28 +54,28 @@ export function ImportExportComponent({ onClose }: { onClose: () => void }) {
           onInput={onImport}
           hidden
         />
-        <label
+        <Label
+          variant="btn"
           htmlFor="file-import"
-          className="btn"
           aria-label={t('settings.importExport.importBtnLabel')}
           tabIndex={0}
           role="button"
         >
           <TbDatabaseImport className="lucide w-4 h-4 mr-1 inline" />
           {t('settings.importExport.importBtnLabel')}
-        </label>
+        </Label>
       </div>
 
       <DelimeterComponent />
 
       <SettingsSectionLabel>
-        <LuEye className="lucide w-4 h-4 mr-1 inline" />
+        <Icon icon="LuEye" size="sm" variant="leftside" />
         {t('settings.importExport.technicalDemoSectionTitle')}
       </SettingsSectionLabel>
 
-      <button className="btn" onClick={debugImportDemoConv}>
+      <Button onClick={debugImportDemoConv}>
         {t('settings.importExport.importDemoConversationBtnLabel')}
-      </button>
+      </Button>
     </>
   );
 }

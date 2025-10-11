@@ -163,14 +163,15 @@
       "output": {
         "loading": "جاري تحميل Pyodide...",
         "running": "جاري التشغيل..."
-      },
-      "buttons": {
-        "run": "تشغيل",
-        "stop": "إيقاف"
-      },
-      "links": {
-        "reportBug": "الإبلاغ عن خطأ"
       }
+    },
+    "buttons": {
+      "close": "إغلاق",
+      "run": "تشغيل",
+      "stop": "إيقاف"
+    },
+    "links": {
+      "reportBug": "الإبلاغ عن خطأ"
     }
   },
   "settings": {

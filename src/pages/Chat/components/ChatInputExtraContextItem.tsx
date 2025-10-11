@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuFileText, LuVolume2, LuX } from 'react-icons/lu';
-import { MessageExtra } from '../types';
-import { classNames } from '../utils';
+import { Button, Icon } from '../../../components';
+import { MessageExtra } from '../../../types';
+import { classNames } from '../../../utils';
 
 export default function ChatInputExtraContextItem({
   items,
@@ -40,13 +40,14 @@ export default function ChatInputExtraContextItem({
         >
           {removeItem && (
             <div className="indicator-item indicator-top">
-              <button
+              <Button
                 aria-label={t('chatInput.ariaLabels.removeButton')}
-                className="btn btn-neutral btn-sm w-4 h-4 p-0 rounded-full"
+                variant="neutral"
+                size="icon-small"
                 onClick={() => removeItem(i)}
               >
-                <LuX className="lucide h-3 w-3" />
-              </button>
+                <Icon icon="LuX" size="xs" />
+              </Button>
             </div>
           )}
 
@@ -71,9 +72,17 @@ export default function ChatInputExtraContextItem({
                   aria-description={t('chatInput.ariaLabels.documentIcon')}
                 >
                   {item.type === 'audioFile' ? (
-                    <LuVolume2 className="lucide h-8 w-8 text-gray-500" />
+                    <Icon
+                      icon="LuVolume2"
+                      size="xl"
+                      className="text-gray-500"
+                    />
                   ) : (
-                    <LuFileText className="lucide h-8 w-8 text-gray-500" />
+                    <Icon
+                      icon="LuFileText"
+                      size="xl"
+                      className="text-gray-500"
+                    />
                   )}
                 </div>
 
@@ -96,12 +105,13 @@ export default function ChatInputExtraContextItem({
           <div className="modal-box">
             <div className="flex justify-between items-center mb-4">
               <b>{showingItem.name ?? t('chatInput.item.extraContentName')}</b>
-              <button
-                className="btn btn-ghost btn-sm"
+              <Button
+                variant="ghost"
+                size="small"
                 aria-label={t('chatInput.previewDialog.closeButton')}
               >
-                <LuX className="lucide h-5 w-5" onClick={() => setShow(-1)} />
-              </button>
+                <Icon icon="LuX" size="md" onClick={() => setShow(-1)} />
+              </Button>
             </div>
             {showingItem.type === 'imageFile' ? (
               <img

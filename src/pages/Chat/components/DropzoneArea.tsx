@@ -1,8 +1,8 @@
 import { ClipboardEvent, useState } from 'react';
 import Dropzone from 'react-dropzone';
-import { useAppContext } from '../context/app';
-import { FileUploadApi } from '../hooks/useFileUpload';
-import { classNames } from '../utils';
+import { FileUploadApi } from '../../../hooks/useFileUpload';
+import { useAppContext } from '../../../store/app';
+import { classNames } from '../../../utils';
 import ChatInputExtraContextItem from './ChatInputExtraContextItem';
 
 export function DropzoneArea({

@@ -1,3 +1,5 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { InferenceApiMessage } from '../types';
 
 /**
@@ -286,3 +288,7 @@ export const timeFormatter = new Intl.DateTimeFormat(
     timeStyle: 'short',
   }
 );
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

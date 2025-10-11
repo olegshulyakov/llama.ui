@@ -163,14 +163,15 @@
       "output": {
         "loading": "Carregando Pyodide...",
         "running": "Executando..."
-      },
-      "buttons": {
-        "run": "Executar",
-        "stop": "Parar"
-      },
-      "links": {
-        "reportBug": "Reportar um bug"
       }
+    },
+    "buttons": {
+      "close": "Fechar",
+      "run": "Executar",
+      "stop": "Parar"
+    },
+    "links": {
+      "reportBug": "Reportar um bug"
     }
   },
   "settings": {

@@ -1,21 +1,16 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-  LuDownload,
-  LuEllipsisVertical,
-  LuPencil,
-  LuSquarePen,
-  LuTrash,
-  LuX,
-} from 'react-icons/lu';
 import { useNavigate } from 'react-router';
-import { useChatContext } from '../context/chat';
-import { useModals } from '../context/modal';
 import IndexedDB from '../database/indexedDB';
+import { useChatContext } from '../store/chat';
+import { useModals } from '../store/modal';
 import { Conversation } from '../types';
 import { classNames } from '../utils';
-import { downloadAsFile } from './common';
+import { downloadAsFile } from '../utils/downloadAsFile';
+import { Button } from './Button';
+import { Icon } from './Icon';
+import { Label } from './Label';
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -66,36 +61,40 @@ export default function Sidebar() {
         <div className="flex flex-col bg-base-300 h-full min-h-0 max-w-full xl:w-72 pb-4 px-4 xl:pl-2 xl:pr-0">
           <div className="flex flex-row items-center justify-between xl:py-2">
             {/* close sidebar button */}
-            <label className="w-8 h-8 p-0 max-xl:hidden"></label>
-            <label
+            <Label size="icon" className="max-xl:hidden" />
+            <Label
+              className="xl:hidden"
+              variant="btn-ghost"
+              size="icon-rounded"
               htmlFor="toggle-drawer"
-              className="btn btn-ghost w-8 h-8 p-0 rounded-full xl:hidden"
+              role="button"
               title={t('sidebar.buttons.closeSideBar')}
               aria-label={t('sidebar.buttons.closeSideBar')}
-              role="button"
               tabIndex={0}
             >
-              <LuX className="lucide w-5 h-5" />
-            </label>
+              <Icon icon="LuX" size="md" />
+            </Label>
 
-            <label
-              className="font-bold tracking-wider leading-8 text-center cursor-pointer"
+            <Label
+              variant="fake-btn"
+              className="font-bold tracking-wider leading-8"
               aria-label={import.meta.env.VITE_APP_NAME}
               role="button"
               onClick={() => navigate('/')}
             >
               {import.meta.env.VITE_APP_NAME}
-            </label>
+            </Label>
 
             {/* new conversation button */}
-            <button
-              className="btn btn-ghost w-8 h-8 p-0 rounded-full"
+            <Button
+              variant="ghost"
+              size="icon-rounded"
               onClick={() => navigate('/')}
               title={t('header.buttons.newConv')}
               aria-label={t('header.ariaLabels.newConv')}
             >
-              <LuSquarePen className="lucide w-5 h-5" />
-            </button>
+              <Icon icon="LuSquarePen" size="md" />
+            </Button>
           </div>
 
           {/* scrollable conversation list */}
@@ -133,8 +132,10 @@ const ConversationGroup = memo(
       <div role="group">
         {/* group name (by date) */}
         {/* we use btn class here to make sure that the padding/margin are aligned with the other items */}
-        <b
-          className="btn btn-ghost btn-xs bg-none btn-disabled block text-xs text-base-content text-start px-2 mb-0 mt-6 font-bold opacity-75"
+        <Label
+          className="px-2 mb-0 mt-6 opacity-75"
+          variant="group-title"
+          size="xs"
           role="note"
           aria-description={t(`sidebar.groups.${group.title}`, {
             defaultValue: group.title,
@@ -145,11 +146,17 @@ const ConversationGroup = memo(
             i18nKey={`sidebar.groups.${group.title}`}
             defaults={group.title}
           />
-        </b>
+        </Label>
 
-        {group.conversations.map((conv) => (
-          <ConversationItem key={conv.id} conv={conv} onSelect={onItemSelect} />
-        ))}
+        <ul>
+          {group.conversations.map((conv) => (
+            <ConversationItem
+              key={conv.id}
+              conv={conv}
+              onSelect={onItemSelect}
+            />
+          ))}
+        </ul>
       </div>
     );
   }
@@ -214,7 +221,7 @@ const ConversationItem = memo(
     };
 
     return (
-      <div
+      <li
         role="menuitem"
         tabIndex={0}
         aria-label={conv.name}
@@ -224,29 +231,31 @@ const ConversationItem = memo(
         })}
       >
         <button
+          type="button"
           key={conv.id}
           className="w-full overflow-hidden truncate text-start"
           onClick={handleSelect}
           dir="auto"
-          type="button"
           title={conv.name}
           aria-label={t('sidebar.ariaLabels.select', { name: conv.name })}
         >
           {conv.name}
         </button>
 
-        <div tabIndex={0} className="dropdown dropdown-end h-5">
-          <button
+        <div tabIndex={0} className="dropdown dropdown-end">
+          <Button
             // on mobile, we always show the ellipsis icon
             // on desktop, we only show it when the user hovers over the conversation item
             // we use opacity instead of hidden to avoid layout shift
-            className="cursor-pointer opacity-100 xl:opacity-20 group-hover:opacity-100"
+            className="h-auto w-auto opacity-100 xl:opacity-20 group-hover:opacity-100 border-none"
+            variant="ghost"
+            size="icon"
             onClick={() => {}}
             title={t('sidebar.buttons.more')}
             aria-label={t('sidebar.ariaLabels.more')}
           >
-            <LuEllipsisVertical className="lucide w-5 h-5" />
-          </button>
+            <Icon icon="LuEllipsisVertical" size="md" />
+          </Button>
           {/* dropdown menu */}
           <ul
             aria-label={t('sidebar.ariaLabels.dropdown')}
@@ -255,24 +264,26 @@ const ConversationItem = memo(
             className="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow"
           >
             <li role="menuitem" tabIndex={0} onClick={handleRename}>
-              <button
-                type="button"
+              <Button
+                variant="menu-item"
+                size="small"
                 title={t('sidebar.buttons.rename')}
                 aria-label={t('sidebar.ariaLabels.rename')}
               >
-                <LuPencil className="lucide w-4 h-4" />
+                <Icon icon="LuPencil" size="sm" />
                 <Trans i18nKey="sidebar.buttons.rename" />
-              </button>
+              </Button>
             </li>
             <li role="menuitem" tabIndex={0} onClick={handleDownload}>
-              <button
-                type="button"
+              <Button
+                variant="menu-item"
+                size="small"
                 title={t('sidebar.buttons.download')}
                 aria-label={t('sidebar.ariaLabels.download')}
               >
-                <LuDownload className="lucide w-4 h-4" />
+                <Icon icon="LuDownload" size="sm" />
                 <Trans i18nKey="sidebar.buttons.download" />
-              </button>
+              </Button>
             </li>
             <li
               role="menuitem"
@@ -280,18 +291,19 @@ const ConversationItem = memo(
               className="text-error"
               onClick={handleDelete}
             >
-              <button
-                type="button"
+              <Button
+                variant="menu-item"
+                size="small"
                 title={t('sidebar.buttons.delete')}
                 aria-label={t('sidebar.ariaLabels.delete')}
               >
-                <LuTrash className="lucide w-4 h-4" />
+                <Icon icon="LuTrash" size="sm" />
                 <Trans i18nKey="sidebar.buttons.delete" />
-              </button>
+              </Button>
             </li>
           </ul>
         </div>
-      </div>
+      </li>
     );
   }
 );

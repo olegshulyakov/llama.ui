@@ -163,14 +163,15 @@
       "output": {
         "loading": "正在加载 Pyodide...",
         "running": "正在运行..."
-      },
-      "buttons": {
-        "run": "运行",
-        "stop": "停止"
-      },
-      "links": {
-        "reportBug": "报告错误"
       }
+    },
+    "buttons": {
+      "close": "关闭",
+      "run": "运行",
+      "stop": "停止"
+    },
+    "links": {
+      "reportBug": "报告错误"
     }
   },
   "settings": {

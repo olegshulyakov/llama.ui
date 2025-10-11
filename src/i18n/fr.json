@@ -163,14 +163,15 @@
       "output": {
         "loading": "Chargement de Pyodide...",
         "running": "En cours d'exécution..."
-      },
-      "buttons": {
-        "run": "Exécuter",
-        "stop": "Arrêter"
-      },
-      "links": {
-        "reportBug": "Signaler un bogue"
       }
+    },
+    "buttons": {
+      "close": "Fermer",
+      "run": "Exécuter",
+      "stop": "Arrêter"
+    },
+    "links": {
+      "reportBug": "Signaler un bogue"
     }
   },
   "settings": {

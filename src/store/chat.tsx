@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { matchPath, useLocation, useNavigate } from 'react-router';
 import { configToCustomOptions, normalizeMsgsForAPI } from '../api/utils';
 import { isDev } from '../config';
-import { useInferenceContext } from '../context/inference';
 import IndexedDB from '../database/indexedDB';
 import {
   CanvasData,
@@ -23,6 +22,7 @@ import {
 } from '../types';
 import { filterThoughtFromMsgs } from '../utils';
 import { useAppContext } from './app';
+import { useInferenceContext } from './inference';
 
 interface SendMessageProps {
   convId: Message['convId'];

@@ -1,157 +1,9 @@
-import {
-  ButtonHTMLAttributes,
-  FC,
-  memo,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LuChevronDown } from 'react-icons/lu';
 import { isDev } from '../config';
 import { classNames } from '../utils';
-
-/**
- * A close button (X icon) with a default Tailwind CSS styling.
- */
-export const XCloseButton: React.ElementType<
-  React.ClassAttributes<HTMLButtonElement> &
-    React.HTMLAttributes<HTMLButtonElement>
-> = ({ className, ...props }) => (
-  <button className={`btn btn-square btn-sm ${className ?? ''}`} {...props}>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-6 w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  </button>
-);
-
-/**
- * Renders a link that opens in a new tab with proper security and accessibility attributes.
- *
- * @param href - URL to visit in new tab
- * @param children - Visible link text
- */
-export const OpenInNewTab = ({
-  href,
-  children,
-}: {
-  href: string;
-  children: string;
-}) => (
-  <a
-    className="underline"
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    {children}
-  </a>
-);
-
-export const downloadAsFile = (blobParts: BlobPart[], fileName: string) => {
-  const blob = new Blob(blobParts, {
-    type: 'application/json',
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-/**
- * @deprecated Use `title` and `aria-label` props in button directly as utiliy classes.
- *
- * Wraps any button that needs a tooltip message.
- *
- * @param className - Optional additional classes to apply to the button
- * @param onClick - Optional click handler for the container element
- * @param onMouseLeave - Optional mouse leave handler for the inner button
- * @param children - React node to render inside the button
- * @param tooltipsContent - Text content to show in tooltip
- * @param disabled - Whether the button should be disabled
- */
-export function BtnWithTooltips({
-  className,
-  onClick,
-  onMouseLeave,
-  children,
-  tooltipsContent,
-  disabled,
-}: {
-  className?: string;
-  onClick?: () => void;
-  onMouseLeave?: () => void;
-  children: React.ReactNode;
-  tooltipsContent: string;
-  disabled?: boolean;
-}) {
-  // the onClick handler is on the container, so screen readers can safely ignore the inner button
-  // this prevents the label from being read twice
-  return (
-    <div
-      className="tooltip tooltip-bottom"
-      data-tip={tooltipsContent}
-      role="button"
-      onClick={onClick}
-    >
-      <button
-        className={`${className ?? ''} flex items-center justify-center`}
-        disabled={disabled}
-        onMouseLeave={onMouseLeave}
-        aria-hidden={true}
-      >
-        {children}
-      </button>
-    </div>
-  );
-}
-
-interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: FC<{ className?: string }>;
-  t: ReturnType<typeof useTranslation>['t'];
-  titleKey: string;
-  ariaLabelKey: string;
-}
-export const IntlIconButton = memo(function IntlIconButton({
-  className,
-  disabled,
-  onClick,
-  icon: Icon,
-  t,
-  titleKey,
-  ariaLabelKey,
-  ...props
-}: IconButtonProps) {
-  return (
-    <button
-      className={className}
-      onClick={onClick}
-      disabled={disabled}
-      title={t(titleKey)}
-      aria-label={t(ariaLabelKey)}
-      {...props}
-    >
-      <Icon className="lucide h-4 w-4" />
-    </button>
-  );
-});
+import { Button } from './Button';
+import { Icon } from './Icon';
 
 export interface DropdownOption {
   value: string | number;
@@ -261,7 +113,7 @@ export function Dropdown<T extends DropdownOption>({
           >
             {currentValue}
             {!hideChevron && (
-              <LuChevronDown className="lucide inline h-5 w-5 ml-1" />
+              <Icon icon="LuChevronDown" variant="rightside" size="md" />
             )}
           </summary>
 
@@ -292,17 +144,18 @@ export function Dropdown<T extends DropdownOption>({
               >
                 {filteredOptions.map((option) => (
                   <li key={option.value}>
-                    <button
+                    <Button
                       className={classNames({
-                        'btn btn-ghost w-full flex gap-2 justify-start font-normal px-2': true,
+                        'w-full flex gap-2 justify-start font-normal px-2': true,
                         'btn-sm': optionsSize === 'small',
                         'btn-active': isSelected(option),
                       })}
+                      variant="ghost"
                       onClick={handleSelect(option)}
                       aria-label={`${option.label} ${isSelected(option) ? 'selected' : 'option'}`}
                     >
                       {renderOption(option)}
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>

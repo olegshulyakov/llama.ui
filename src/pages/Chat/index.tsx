@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import CanvasPyInterpreter from '../components/CanvasPyInterpreter';
-import { ChatInput } from '../components/ChatInput';
-import ChatMessage from '../components/ChatMessage';
-import { useAppContext } from '../context/app';
-import { CallbackGeneratedChunk, useChatContext } from '../context/chat';
-import IndexedDB from '../database/indexedDB';
-import { useChatScroll } from '../hooks/useChatScroll';
+import IndexedDB from '../../database/indexedDB';
+import { useChatScroll } from '../../hooks/useChatScroll';
+import { useAppContext } from '../../store/app';
+import { CallbackGeneratedChunk, useChatContext } from '../../store/chat';
 import {
   CanvasType,
   Conversation,
   Message,
   MessageDisplay,
   MessageExtra,
-} from '../types';
-import { classNames } from '../utils';
+} from '../../types';
+import { classNames } from '../../utils';
+import CanvasPyInterpreter from './components/CanvasPyInterpreter';
+import { ChatInput } from './components/ChatInput';
+import ChatMessage from './components/ChatMessage';
 
 function getListMessageDisplay(
   msgs: Readonly<Message[]>,

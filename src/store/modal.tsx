@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import { Trans } from 'react-i18next';
+import { Button } from '../components';
 
 enum ModalActionType {
   SHOW_MODAL = 'SHOW_MODAL',
@@ -167,18 +168,12 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
           <div className="modal-box">
             <h3 className="font-bold text-lg">{state.confirm.message}</h3>
             <div className="modal-action">
-              <button
-                className="btn btn-ghost"
-                onClick={() => handleConfirm(false)}
-              >
+              <Button variant="ghost" onClick={() => handleConfirm(false)}>
                 <Trans i18nKey="modals.cancelBtnLabel" />
-              </button>
-              <button
-                className="btn btn-error"
-                onClick={() => handleConfirm(true)}
-              >
+              </Button>
+              <Button variant="error" onClick={() => handleConfirm(true)}>
                 <Trans i18nKey="modals.confirmBtnLabel" />
-              </button>
+              </Button>
             </div>
           </div>
         </dialog>
@@ -201,15 +196,15 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
               }}
             />
             <div className="modal-action">
-              <button className="btn btn-ghost" onClick={() => handlePrompt()}>
+              <Button variant="ghost" onClick={() => handlePrompt()}>
                 <Trans i18nKey="modals.cancelBtnLabel" />
-              </button>
-              <button
-                className="btn btn-neutral"
+              </Button>
+              <Button
+                variant="neutral"
                 onClick={() => handlePrompt(inputRef.current?.value)}
               >
                 <Trans i18nKey="modals.submitBtnLabel" />
-              </button>
+              </Button>
             </div>
           </div>
         </dialog>
@@ -221,9 +216,9 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
           <div className="modal-box">
             <h3 className="font-bold text-lg">{state.alert.message}</h3>
             <div className="modal-action">
-              <button className="btn" onClick={handleAlertClose}>
+              <Button onClick={handleAlertClose}>
                 <Trans i18nKey="modals.okBtnLabel" />
-              </button>
+              </Button>
             </div>
           </div>
         </dialog>

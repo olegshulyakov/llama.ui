@@ -4,8 +4,8 @@ import { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../context/app';
-import { useInferenceContext } from '../context/inference';
+import { useAppContext } from '../store/app';
+import { useInferenceContext } from '../store/inference';
 import { MessageExtra } from '../types';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorkerSrc;

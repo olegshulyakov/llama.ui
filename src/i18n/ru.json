@@ -163,14 +163,15 @@
       "output": {
         "loading": "Загрузка Pyodide...",
         "running": "Выполняется..."
-      },
-      "buttons": {
-        "run": "Запустить",
-        "stop": "Остановить"
-      },
-      "links": {
-        "reportBug": "Сообщить об ошибке"
       }
+    },
+    "buttons": {
+      "close": "Закрыть",
+      "run": "Запустить",
+      "stop": "Остановить"
+    },
+    "links": {
+      "reportBug": "Сообщить об ошибке"
     }
   },
   "settings": {
