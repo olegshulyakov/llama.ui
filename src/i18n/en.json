@@ -374,10 +374,26 @@
       }
     },
     "textToSpeech": {
-      "check": {
-        "label": "Check",
-        "text": "This is a demo of Web Speech Synthesis."
-      }
+      "mode": {
+        "browser": "Browser",
+        "provider": "Voice Provider"
+      },
+      "buttons": {
+        "play": "Play"
+      },
+      "title": {
+        "play": "Play"
+      },
+      "ariaLabels": {
+        "play": "Play test message"
+      },
+      "modeLabel": "Mode",
+      "modeNote": "Choose between browser-based or model-based text-to-speech.",
+      "testSpeech": "Test Speech",
+      "browserNotSupported": "Your browser does not support text-to-speech.",
+      "testText": "This is a demo of Web Speech Synthesis.",
+      "testTextPlaceholder": "Enter text to test speech...",
+      "modelTtsNotImplemented": "Model-based TTS is not implemented for this provider. This would require a dedicated TTS service or model capability."
     },
     "presetManager": {
       "newPreset": "Save the current settings as a preset",
