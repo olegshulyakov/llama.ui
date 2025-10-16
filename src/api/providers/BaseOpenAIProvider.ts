@@ -6,7 +6,10 @@ import {
   LLMProvider,
   ModelProvider,
   SSEChatCompletionMessage,
+  TextToSpeechProvider,
+  VoiceProvider,
 } from '../../types';
+import { SpeechCreateParams, SpeechVoice } from '../../types/audio';
 import { normalizeUrl } from '../../utils';
 import { noResponse, processSSEStream } from '../utils';
 
@@ -36,7 +39,12 @@ import { noResponse, processSSEStream } from '../utils';
  * ```
  */
 export class BaseOpenAIProvider
-  implements LLMProvider, ModelProvider, ChatCompletionProvider
+  implements
+    LLMProvider,
+    ModelProvider,
+    ChatCompletionProvider,
+    VoiceProvider,
+    TextToSpeechProvider
 {
   /**
    * The base URL of the OpenAI-compatible API endpoint.
@@ -61,7 +69,20 @@ export class BaseOpenAIProvider
    * Used to determine cache expiration (5 minutes).
    * @internal
    */
-  protected lastUpdated: number;
+  protected lastUpdatedModels: number;
+
+  /**
+   * Cached list of available voices fetched from the API.
+   * @internal
+   */
+  private voices: SpeechVoice[] = [];
+
+  /**
+   * Timestamp of the last successful voice list fetch.
+   * Used to determine cache expiration (5 minutes).
+   * @internal
+   */
+  protected lastUpdatedVoices: number;
 
   /**
    * Constructs a new BaseOpenAIProvider instance.
@@ -76,7 +97,8 @@ export class BaseOpenAIProvider
     if (!baseUrl) throw new Error(`Base URL is not specified`);
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
-    this.lastUpdated = Date.now();
+    this.lastUpdatedModels = 0;
+    this.lastUpdatedVoices = 0;
   }
 
   /**
@@ -113,7 +135,7 @@ export class BaseOpenAIProvider
   async getModels(): Promise<InferenceApiModel[]> {
     if (isDev) console.debug('v1Models', this.models);
 
-    if (this.models.length > 0 && !this.isExpired()) {
+    if (this.models.length > 0 && !this.isExpired(this.lastUpdatedModels)) {
       return this.models;
     }
 
@@ -134,7 +156,7 @@ export class BaseOpenAIProvider
     const json = await fetchResponse.json();
     this.models = this.jsonToModels(json.data);
 
-    if (this.models.length > 0) this.lastUpdated = Date.now();
+    if (this.models.length > 0) this.lastUpdatedModels = Date.now();
 
     return this.models;
   }
@@ -218,6 +240,70 @@ export class BaseOpenAIProvider
 
     await this.isErrorResponse(fetchResponse);
     return processSSEStream<SSEChatCompletionMessage>(fetchResponse);
+  }
+
+  /**
+   * Retrieves the list of available speech voices from the provider.
+   * @returns {Promise<SpeechVoice[]>} A promise that resolves to an array of voice definitions.
+   */
+  async getVoices(): Promise<SpeechVoice[]> {
+    if (isDev) console.debug('v1Voices', this.voices);
+
+    if (this.voices.length > 0 && !this.isExpired(this.lastUpdatedVoices)) {
+      return this.voices;
+    }
+
+    let fetchResponse = noResponse;
+    try {
+      fetchResponse = await fetch(
+        normalizeUrl('v1/audio/voices', this.getBaseUrl()),
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+          signal: AbortSignal.timeout(1000),
+        }
+      );
+    } catch {
+      // Silently ignore network/timeout errors; will be caught in isErrorResponse
+    }
+    await this.isErrorResponse(fetchResponse);
+    const json = await fetchResponse.json();
+    this.voices = json.data && Array.isArray(json.data) ? [...json.data] : [];
+
+    if (this.voices.length > 0) this.lastUpdatedVoices = Date.now();
+
+    return this.voices;
+  }
+
+  /**
+   * Generates audio from text using the specified parameters.
+   * @param {SpeechCreateParams} params - Configuration for speech synthesis (text, voice, speed, etc.).
+   * @param {AbortSignal} abortSignal - Signal to cancel the request if needed.
+   * @returns {Promise<Blob>} The generated audio data as a Blob (e.g., MP3 or WAV).
+   */
+  async postSpeech(
+    params: SpeechCreateParams,
+    abortSignal: AbortSignal
+  ): Promise<Blob> {
+    if (isDev) console.debug('v1Speech', params);
+
+    let fetchResponse = noResponse;
+    try {
+      fetchResponse = await fetch(
+        normalizeUrl('v1/audio/speech', this.getBaseUrl()),
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(params),
+          signal: abortSignal,
+        }
+      );
+    } catch {
+      // Silently ignore network/timeout errors; will be caught in isErrorResponse
+    }
+
+    await this.isErrorResponse(fetchResponse);
+    return fetchResponse.blob();
   }
 
   /**
@@ -317,8 +403,8 @@ export class BaseOpenAIProvider
    *
    * @protected
    */
-  protected isExpired(): boolean {
-    return Date.now() - this.lastUpdated > 5 * 60 * 1000;
+  protected isExpired(lastUpdated: number): boolean {
+    return Date.now() - lastUpdated > 5 * 60 * 1000;
   }
 
   /**
@@ -441,7 +527,7 @@ export class SelfHostedOpenAIProvider extends BaseOpenAIProvider {
    * @inheritdoc
    */
   protected isExpired(): boolean {
-    return Date.now() - this.lastUpdated > 60 * 1000;
+    return Date.now() - this.lastUpdatedModels > 60 * 1000;
   }
 }
 
@@ -467,7 +553,7 @@ export class CloudOpenAIProvider extends BaseOpenAIProvider {
    * @inheritdoc
    */
   protected isExpired(): boolean {
-    return Date.now() - this.lastUpdated > 15 * 60 * 1000;
+    return Date.now() - this.lastUpdatedModels > 15 * 60 * 1000;
   }
 
   /** @inheritdoc */

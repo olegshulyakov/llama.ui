@@ -36,7 +36,8 @@ export interface SettingFieldCustom {
     | 'import-export'
     | 'preset-manager'
     | 'fetch-models'
-    | 'theme-manager';
+    | 'theme-manager'
+    | 'voice-manager';
   component:
     | string
     | React.FC<{

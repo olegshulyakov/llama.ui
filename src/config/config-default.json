@@ -36,8 +36,13 @@
   "dry_penalty_last_n": -1,
   "custom": "",
   "pyIntepreterEnabled": false,
+  "ttsMode": "browser",
   "ttsVoice": "",
   "ttsPitch": 1,
   "ttsRate": 1,
-  "ttsVolume": 1
+  "ttsVolume": 1,
+  "ttsProvider": "",
+  "ttsBaseUrl": "",
+  "ttsApiKey": "",
+  "ttsModel": ""
 }

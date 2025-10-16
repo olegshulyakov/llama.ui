@@ -14,7 +14,10 @@ export type ProviderOption = {
   allowCustomBaseUrl: boolean;
 };
 
+export type TtsMode = 'browser' | 'provider';
+
 export interface Configuration {
+  /* text inference */
   provider: string;
   baseUrl: string;
   apiKey: string;
@@ -72,6 +75,11 @@ export interface Configuration {
   ttsPitch: number;
   ttsRate: number;
   ttsVolume: number;
+  ttsMode: string;
+  ttsProvider: string /* TODO placeholder */;
+  ttsBaseUrl: string;
+  ttsApiKey: string;
+  ttsModel: string;
 }
 export type ConfigurationKey = keyof Configuration;
 
