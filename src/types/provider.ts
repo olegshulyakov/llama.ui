@@ -1,3 +1,4 @@
+import { SpeechCreateParams, SpeechVoice } from './audio';
 import { InferenceApiMessage, InferenceApiModel } from './inference';
 
 /**
@@ -197,3 +198,45 @@ export interface InferenceProvider
   extends LLMProvider,
     ModelProvider,
     ChatCompletionProvider {}
+
+/**
+ * Interface defining the contract for retrieving available text-to-speech voices.
+ * @interface
+ * @method getVoices - Fetches the list of available speech voices asynchronously.
+ * @returns {Promise<SpeechVoice[]>} A promise resolving to an array of voice definitions.
+ */
+export interface VoiceProvider {
+  /**
+   * Retrieves the list of available speech voices from the provider.
+   * @returns {Promise<SpeechVoice[]>} A promise that resolves to an array of voice definitions.
+   */
+  getVoices(): Promise<SpeechVoice[]>;
+}
+
+/**
+ * Interface defining the contract for text-to-speech synthesis.
+ * Combines authentication, voice discovery, and audio generation capabilities.
+ * @interface
+ * @extends {LLMProvider}
+ * @extends {ModelProvider}
+ * @extends {VoiceProvider}
+ * @method postSpeech - Generates audio from text using the specified parameters.
+ * @param {SpeechCreateParams} params - Parameters for speech generation (text, voice, speed, etc.).
+ * @param {AbortSignal} abortSignal - Signal to cancel the audio generation request.
+ * @returns {Promise<Blob>} A promise resolving to the generated audio as a Blob.
+ */
+export interface TextToSpeechProvider
+  extends LLMProvider,
+    ModelProvider,
+    VoiceProvider {
+  /**
+   * Generates audio from text using the specified parameters.
+   * @param {SpeechCreateParams} params - Configuration for speech synthesis (text, voice, speed, etc.).
+   * @param {AbortSignal} abortSignal - Signal to cancel the request if needed.
+   * @returns {Promise<Blob>} The generated audio data as a Blob (e.g., MP3 or WAV).
+   */
+  postSpeech(
+    params: SpeechCreateParams,
+    abortSignal: AbortSignal
+  ): Promise<Blob>;
+}

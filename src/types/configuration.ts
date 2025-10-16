@@ -15,11 +15,18 @@ export type ProviderOption = {
 };
 
 export interface Configuration {
+  /* text inference */
   provider: string;
   baseUrl: string;
   apiKey: string;
   model: string;
   systemMessage: string;
+
+  /* text to speech */
+  ttsProvider: string;
+  ttsBaseUrl: string;
+  ttsApiKey: string;
+  ttsModel: string;
 
   /* ui */
   initials: string;
